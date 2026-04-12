@@ -1,3 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trig Hexagon Visualizer</title>
+    </head>
+<body>
+
+
 <style>
   .cockpit{display:grid;grid-template-columns:1fr 210px;gap:16px;padding:1rem 0;align-items:start}
   .panel{display:flex;flex-direction:column;gap:8px}
@@ -120,3 +130,6 @@ bind('glow-radius','glow-radius-out');bind('glow-intensity','glow-intensity-out'
 function generateManim(){sendPrompt(`Generate Manim code: bg=${getVal('c-bg')}, hex_color=${getVal('c-hex')}, hex_stroke=${getVal('hex-stroke')}, hex_fill_opacity=${(parseInt(getVal('hex-opacity'))/100).toFixed(2)}, diag_color=${getVal('c-diag')}, diag_stroke=${getVal('diag-stroke')}, label_color=${getVal('c-label')}, glow_color=${getVal('c-glow')}, glow_radius=${getVal('glow-radius')}, glow_intensity=${(parseInt(getVal('glow-intensity'))/100).toFixed(2)}, font_size=${getVal('font-size')}, show_labels=${getChecked('show-labels')}, show_diagonals=${getChecked('show-diag')}, show_center=${getChecked('show-center')}, show_glow=${getChecked('show-glow')}, use_sphere=${getChecked('use-sphere')}`);}
 draw();
 </script>
+
+    </body>
+</html>

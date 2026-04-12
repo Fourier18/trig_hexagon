@@ -1,7 +1,3 @@
-Got it. Here’s a stripped, accurate README that stays strictly within what you described.
-
----
-
 # Trig Hexagon Visualizer
 
 A Python + Manim-based tool for creating exact mathematical vector graphics of trigonometric and geometric constructions.

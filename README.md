@@ -1,64 +1,35 @@
-# Trig Hexagon Visualizer
+# trig_hexagon
 
-A Python + Manim-based tool for creating exact mathematical vector graphics of trigonometric and geometric constructions.
+Print-quality visualizations of the Magic Trig Hexagon — built with Manim.
 
----
+![Python 3.12](https://img.shields.io/badge/Python-3.12-blue) ![Manim CE](https://img.shields.io/badge/Manim_CE-v0.20-red)
 
-## Purpose
+This repository renders the **Magic Trig Hexagon** — a mnemonic diagram encoding six fundamental trig identities as geometric relationships between vertices of a regular hexagon.
 
-This project is for building precise, math-driven diagrams that can be exported at high resolution for printing or reuse.
+## What the hexagon encodes
 
-It is intended as an alternative to tools like Desmos, GeoGebra, and Inkscape, which can feel limiting when trying to produce exact, clean vector-style constructions controlled purely by mathematics.
+Vertices are labeled `sin`, `cos`, `tan`, `cot`, `sec`, `csc` at fixed positions on a flat-top hexagon. The geometry is structural, not decorative:
 
----
+- Any three consecutive vertices satisfy a **product identity** (e.g. sin · csc = 1)
+- Opposite vertices are **reciprocal pairs**
+- The central **1** anchors all six relationships
+- The three long diagonals connect each function to its reciprocal through unity
 
-## What it does
+## Implementation
 
-* Generates static mathematical diagrams using Manim
-* Focuses on geometric constructions (lines, circles, angles, labels, etc.)
-* Produces high-resolution outputs suitable for printing
-* Supports multiple visual variants of the same construction (e.g. labeled / unlabeled / color variations)
-* Keeps everything defined through exact math, not manual drawing
+All geometry is computed from first principles using vertex angles — no GUI, no dragging handles. Coordinates are derived mathematically and passed directly to Manim primitives. Labels render via `MathTex` with LaTeX.
 
----
+## Outputs
 
-## Main focus
+- 4096×4096 PNG exports for print
+- Color variants and labeled/unlabeled versions in progress
 
-The primary use case is building versions of a “magic trig hexagon,” including:
+## Usage
 
-* labeled versions
-* unlabeled clean versions
-* color-coded variations
+```bash
+# Preview
+manim -pql --resolution 480,480 trig_hexagon.py TrigHexagon
 
-All derived from the same underlying geometric relationships.
-
----
-
-## Tooling
-
-* Python
-* Manim Community Edition
-
----
-
-## Workflow
-
-1. Define a geometric construction in Python using Manim
-2. Adjust parameters (positions, labels, colors, transparency)
-3. Render locally using Manim
-4. Export high-resolution output for print or use
-
----
-
-## Output
-
-* Static rendered diagrams
-* High-resolution images suitable for printing
-
----
-
-## Goal
-
-To create a clean system for generating mathematically exact geometric visuals, especially for trigonometric structures like the trig hexagon, with full control over appearance while preserving strict mathematical definition.
-
----
+# Print
+manim -pqh --resolution 4096,4096 trig_hexagon.py TrigHexagon
+```

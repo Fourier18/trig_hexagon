@@ -1,8 +1,8 @@
 # trig_hexagon
 
-Print-quality visualizations of the Magic Trig Hexagon — built with Manim.
+Print-quality visualizations of the Magic Trig Hexagon
 
-![Python 3.12](https://img.shields.io/badge/Python-3.12-blue) ![Manim CE](https://img.shields.io/badge/Manim_CE-v0.20-red)
+![Python 3.12](https://img.shields.io/badge/Python-3.12-blue)
 
 This repository renders the **Magic Trig Hexagon** — a mnemonic diagram encoding six fundamental trig identities as geometric relationships between vertices of a regular hexagon.
 

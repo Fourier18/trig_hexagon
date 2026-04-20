@@ -10,10 +10,10 @@ This repository renders the **Magic Trig Hexagon** — a mnemonic diagram encodi
 
 Vertices are labeled `sin`, `cos`, `tan`, `cot`, `sec`, `csc` at fixed positions on a flat-top hexagon. The geometry is structural, not decorative:
 
-- Any three consecutive vertices satisfy a **product identity** (e.g. sin · csc = 1)
 - Opposite vertices are **reciprocal pairs**
 - The central **1** anchors all six relationships
 - The three long diagonals connect each function to its reciprocal through unity
+- (More to come)
 
 ## Implementation
 

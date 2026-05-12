@@ -1,0 +1,36 @@
+# Python build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Claude Code session state
+.claude/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor cruft
+.vscode/
+.idea/
+*.swp
+*~
+
+# Local widget config (per-user)
+trighex-config.json
+
+# Manim build artifacts (re-generated from legacy/*.py)
+media/Tex/
+media/texts/
+media/videos/
+media/images/test/
+media/images/trig_hexagon/
+media/images/trig_hexagon_002/
+media/images/trig_hexagon_003/
+media/images/trig_hexagon_004/
+media/images/trig_hexagon_005/
+
+# Working-file duplicate (kept as TRIGHEX_001.html)
+Artifact versions/TRIGHEX_001.txt

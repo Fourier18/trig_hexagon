@@ -82,7 +82,7 @@ The widget is functional end-to-end: render, customize, save, export. The **iden
 Roadmap (per `HANDOFF.md`):
 
 1. Identity overlay redesign (active)
-2. Future: split-out treatments for Half-angle and Quadrants-positive identities (currently removed; they don't live on the hex geometrically)
+2. Future: split-out treatments for Half-angle, Derivatives, and Quadrants-positive identities
 3. Future: native-app packaging (Mac / Android / PC), which would require rethinking persistence
 
 ---

@@ -25,8 +25,9 @@ Reference page: [Magic Hexagon for Trig Identities — Math is Fun](https://www.
 
 ## Features
 
-- **Identity overlays** — single-select dropdown with seven families:
-  - Reciprocal · Product · diagonal · Product · rim · Quotient · Cofunction · Pythagorean · additive · Pythagorean · subtractive
+- **Identity overlays** — single-select dropdown with seven families (in menu order):
+  - Product · diagonal · Product · rim · Quotient · Reciprocal · Cofunction · Pythagorean · additive · Pythagorean · subtractive
+  - Reciprocal is positioned right after Quotient since it's the subspecies — the reciprocal identity is the simplification of the quotient's center path
   - Overlays render on top of whatever hex configuration is currently set
   - Pythagorean modes also re-render all six trig labels and the center `1` with a `²` superscript
 - **Floating ƒ panel** — single bottom-centered button opens a draggable popup with two views (Identity overlay / Appearance), so the hexagon gets the full canvas width
@@ -77,20 +78,21 @@ trig_hexagon/
 
 ## Current state (May 2026)
 
-The widget is functional end-to-end: render, customize, save, export. The **identity overlay visuals are first-pass and pending redesign** — see `HANDOFF.md` for the per-overlay status. Reference mockups for the redesign live in `media/images/refs/`.
+The widget is functional end-to-end: render, customize, save, export. **All seven identity overlays are settled** — each was rebuilt against user-supplied mockups in `media/images/refs/` using a unified design language (red arrows + circled "this equals" label + floating equation in trig-label style). See `HANDOFF.md` for the per-overlay treatment table.
 
 Roadmap (per `HANDOFF.md`):
 
-1. Identity overlay redesign (active)
-2. Future: split-out treatments for Half-angle, Derivatives, and Quadrants-positive identities
-3. Future: native-app packaging (Mac / Android / PC), which would require rethinking persistence
+1. **Cleanup / inspection** — prune dead code (`bgLabel`, `outerR` from first-pass), audit the Appearance panel for vestigial toggles, consider changing default `ID highlight` color from purple to red to match the intended look out of the box.
+2. **Testing** — cross-browser (Firefox / Safari), per-overlay PNG export verification, mobile touch panel behavior.
+3. **Future: split-out treatments** for Half-angle, Derivatives, and Quadrants-positive identities (none of these live on the hex geometrically; would be sibling widgets).
+4. **Future: native-app packaging** (Mac / Windows / Android via Electron, Capacitor, or PWA), which would require rethinking persistence per platform.
 
 ---
 
 ## Contributors
 
-- **[Fourier18](https://github.com/Fourier18)** — project owner, design direction, math review
-- **Claude (Anthropic)** — code architecture, identity-overlay primitives (`drawArrow` / `drawHighlightOval`), Pythagorean `²` label mode, persistence layer, this README
+- **[Fourier18](https://github.com/Fourier18)** — project owner, design direction, math review, identity overlay mockups
+- **Claude (Anthropic)** — code architecture, identity-overlay primitives (`drawArrow` / `drawHighlightOval`), per-overlay implementations against the user's mockups, Pythagorean `²` label mode, persistence layer, this README
 
 ---
 

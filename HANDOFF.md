@@ -1,7 +1,9 @@
 # Handoff — The Magick Hexagon
 
-**Working file:** `Artifact versions/TRIGHEX_002.html`
-**Older version preserved:** `Artifact versions/TRIGHEX_001.html` (pre-refactor reference)
+**Working file (dev):** `Artifact versions/TRIGHEX_002.html`
+**Published file (root, hosted via GitHub Pages):** `index.html` — wraps TRIGHEX_002.html in a full HTML5 doc
+**Live URL:** https://fourier18.github.io/trig_hexagon/
+**Older versions preserved:** `Artifact versions/TRIGHEX_001.html`, `oldindex_001.html`
 **Reference page:** https://www.mathsisfun.com/algebra/trig-magic-hexagon.html
 **Mockups (identity overlays):** `media/images/refs/`
 
@@ -18,7 +20,7 @@ Self-contained HTML widget that renders the trig magic hexagon to a 600×600 can
 - **Title block** — "The Magick Hexagon" (serif italic, dark red `#8b0000`) + ⬡ ornament between thin rules + "trig identities at a glance" small-caps subtitle. Centered.
 - **Hexagon canvas** — flat-top orientation. Vertex indices (`i * 60°` clockwise in canvas coords):
   - `0 = cot` (R), `1 = csc` (BR), `2 = sec` (BL), `3 = tan` (L), `4 = sin` (TL), `5 = cos` (TR), center = "1"
-  - Co-functions occupy the right column; non-co-functions the left. Cofunction pairs mirror across vertical axis.
+  - Co-functions occupy the right column; non-co-functions the left. Cofunction pairs mirror across the vertical axis.
 - **Floating ƒ button** — bottom-center of canvas, ~8% from bottom edge. Icon is the inlined SVG from `media/hex-gear-icon.svg` (uses `currentColor`).
 - **Draggable popup panel** — opens above the button, finger-bumper drag handle at top, shadow deepens while dragging, position resets to default on close/reopen.
 
@@ -26,89 +28,92 @@ Self-contained HTML widget that renders the trig magic hexagon to a 600×600 can
 
 ## ƒ panel — two views
 
-**View 1 · Identity overlay** (default)
-Single-select list. Current entries:
-None / Reciprocal / Product · diagonal / Product · rim / Quotient / Cofunction / Pythagorean · additive / Pythagorean · subtractive.
+**View 1 · Identity overlay** (default). Single-select list:
 
-The last item, **Appearance**, is separated by a divider and swaps the panel to View 2.
+1. None
+2. Product · diagonal — *sin · csc = 1*
+3. Product · rim — *sin = cos · tan*
+4. Quotient — *tan = sin/cos = 1/cot = sec/csc*
+5. **Reciprocal** — *sin = 1 / csc* (subspecies of Quotient: simplifies the center path)
+6. Cofunction — *sin = cos(90° − x)*
+7. Pythagorean · additive — *sin² + cos² = 1²*
+8. Pythagorean · subtractive — *sin² = 1² − cos²*
 
-**View 2 · Appearance** (settings)
-Accordion: Colors / Stroke / Opacity / Typography / Glow-or-sphere / Show toggles. Back link `← Identities` at top returns to View 1. The `ID highlight` color picker drives the overlay arrow/oval color.
+Below a divider: **Appearance** entry that swaps the panel to View 2.
+
+**View 2 · Appearance** (settings).
+Accordion: Colors / Stroke / Opacity / Typography / Glow-or-sphere / Show toggles. Back link `← Identities` at top returns to View 1. The `ID highlight` color picker drives the overlay arrow/oval color (set to red `#cc0000` to match the mockup style; default is purple `#534AB7`).
 
 ---
 
 ## Bottom actions (inside Appearance)
 
-1. **Download PNG · 5400×5400 · 300 dpi** — primary button, brand purple (`#534AB7`).
+1. **Download PNG · 5400×5400 · 300 dpi** — primary button, brand purple.
 2. **Save current as default** — writes to `localStorage.trighex_config_v1`, verifies by read-back.
-3. **↓ / ↑** — manual export/import of `trighex-config.json`. Bulletproof fallback when file:// localStorage is unavailable.
+3. **↓ / ↑** — manual export/import of `trighex-config.json`. Reliable fallback when `file://` localStorage is unavailable.
 
 ---
 
-## Identity overlays — current code state
+## Identity overlays — current state (settled, session 4)
 
-**Status: first-pass implementation landed in session 3. User reviewed and reports extensive mistakes requiring redesign, not just placement tuning. Includes (but not limited to) wrong arrow directions. Specific list of issues per-overlay has not yet been enumerated — next session must walk through each overlay with the user against the mockups.**
+All seven overlays now match the user-supplied mockups in `media/images/refs/` (plus the mathsisfun screenshot for cofunction). Design language is unified across all overlays.
 
-The current code is built around two primitives:
+### Design language
 
-- `drawArrow(points[], opts)` — straight (2 points) or multi-segment elbow (3+ points). Arrowhead at end by default; `doubleHeaded` and `headStart` opts available.
-- `drawHighlightOval(target, opts)` — red oval around a label. `target` is a vertex index `0..5` or the string `'center'`. Auto-sizes to the label; grows when Pythagorean mode adds a `²` superscript.
+- **`drawArrow(points[], opts)`** — straight (2 points) or multi-segment elbow (3+ points). Arrowhead at end by default. Opts: `color`, `lineWidth`, `arrowSize`, `headStart`, `doubleHeaded`.
+- **`drawHighlightOval(target, opts)`** — red oval around a label (vertex index `0..5`) or `'center'` for the "1". Auto-sizes to label width; grows for `²` superscript in Pyth mode.
+- **Arrows do not bisect labels** — start/end offsets keep arrows from cutting through label text. Standard offsets: ~28–34 px from label center toward target.
+- **Floating equation in trig-label style** — italic serif, `c-label` color, no background pill, sized to match labels (or scaled down for multi-line). Most overlays place it at upper-left at `(cx + labelR×1.45 × cos 240°, cy + labelR×1.45 × sin 240°)` ≈ upper-left corner of canvas.
+- **Operator markers** for Pythagorean wedges (`+`, `−`) rendered at the wedge centroid in trig-label style (no pill background).
 
-Seven overlay functions live in the script, each taking `(fv, lv, hi)` where `fv` is vertex positions, `lv` is label positions, `hi` is the overlay color from `c-hi`:
+### Per-overlay treatment
 
-| ID | Function | What it currently draws |
+| ID | Function | Visual |
 |---|---|---|
-| `recip` | `drawReciprocal` | Circles sin; diagonal arrow from csc; `= 1 / csc` label outside the oval |
-| `prod-diag` | `drawProdDiag` | Circles center "1"; arrows along sin↔csc diagonal, terminating at oval edge |
-| `prod-rim` | `drawProdRim` | Circles sin; arrows from cos and tan into sin oval |
-| `quot` | `drawQuot` | Circles tan; five arrows — top rim sin→cos, connector tan→sin, center path tan→cot through "1", bottom rim sec→csc, connector tan→sec |
-| `cofn` | `drawCofn` | Three horizontal pair arrows (sin↔cos, tan↔cot, sec↔csc) + three equation cards at right edge |
-| `pyth-add` | `drawPythAdd` | All labels get `²`, center "1" → "1²"; elbow arrow (above-sin² → above-cos² → center 1²); `(+)` marker in top wedge |
-| `pyth-sub` | `drawPythSub` | All labels get `²`; circles sin²; V-path (cos² → near-center → sin²); `(−)` marker in top wedge |
+| `prod-diag` | `drawProdDiag` | Center "1" circled. Two arrows from outside sin and csc into center oval edge. `sin · csc = 1` at upper-left. |
+| `prod-rim` | `drawProdRim` | sin circled. Dashed quadratic Bezier *associator* from tan to cos arcing **outside** the hex (says "these two multiplied"). Solid arrows from cos and tan into sin oval. `sin = cos · tan` at upper-left. |
+| `quot` | `drawQuot` | tan circled. **6 arrows in 3 two-arrow paths:** top rim (tan→sin→cos), center via "1" (tan→1→cot — terminates at glow radius), bottom rim (tan→sec→csc). Multi-line equation upper-left:<br>`tan = sin / cos`<br>` = 1 / cot`<br>` = sec / csc` |
+| `recip` | `drawReciprocal` | sin circled. Two-arrow flow: sin→1 (numerator) then 1→csc (denominator). `sin = 1 / csc` at upper-left. |
+| `cofn` | `drawCofn` | Three horizontal pair arrows: sin→cos, tan→cot, sec→csc. Multi-line equation block upper-left:<br>`sin(x) = cos(90° − x)`<br>`tan(x) = cot(90° − x)`<br>`sec(x) = csc(90° − x)` |
+| `pyth-add` | `drawPythAdd` | All labels squared (`sin²`, `cos²`, …, center `1²`). 1² circled. **L-shape arrow:** horizontal bar between sin² and cos² labels (just below them), bend just before cos² label, diagonal **through the top wedge interior**, terminating at top center of 1² oval. Stylized `+` at wedge centroid. `sin² + cos² = 1²` upper-left. |
+| `pyth-sub` | `drawPythSub` | All labels squared. sin² circled. **Mirror of additive arrow geometry, reversed direction**: starts at top of 1² oval, up through top wedge, bend before cos² label, horizontal left to sin² oval (arrowhead here). Stylized `−` at wedge centroid. `sin² = 1² − cos²` upper-left. |
 
-All of the above are subject to redesign in the next session — do not treat them as correct.
+### Dropped (code removed, not in menu)
 
-### Mockup files (`media/images/refs/`)
-
-| File | Currently mapped to |
-|---|---|
-| `product identity - center-unity.png` | `prod-diag` |
-| `product identity - periphery.png` | `prod-rim` |
-| `pythagorean identities - additive.png` | `pyth-add` |
-| `pythagorean identities - subtractive.png` | `pyth-sub` |
-| `quotient identity - periphery.png` | `quot` (without center path) |
-| `quotient identity - periphery and center-unity.png` | `quot` (final form, 3 paths) |
-| *mathsisfun cofunction screenshot (not in folder; from session 3 chat)* | `cofn` |
-| *no mockup; verbal spec only* | `recip` |
-
-### Menu changes this session
-
-- Pythagorean split into two entries (`pyth-add`, `pyth-sub`).
-- `half` (Half-angle) and `quad` (Quadrants positive) removed from the dropdown and from the code.
-- `applyConfig` migrates legacy saved IDs: `pyth` → `pyth-add`; `half` / `quad` → `none`.
-
-Whether the menu structure (which families exist, which are split, which are dropped) stays as-is depends on the upcoming redesign pass.
+- **Half-angle** (`half`) — doesn't live on the hex geometrically.
+- **Quadrants positive / ASTC** (`quad`) — same.
+- `applyConfig` migrates legacy saved IDs: `pyth` → `pyth-add`, `half` / `quad` → `none`.
 
 ---
 
 ## Render architecture
 
 - `draw()` is the single source of truth. Reads inputs via `getVal()`/`getChecked()` and renders to `ctx`.
-- `ctx` is `let` (not `const`) so PNG export can temporarily swap it to an off-screen 5400×5400 context and call `draw()` unchanged. `targetCtx.scale(S/600)` makes everything scale proportionally — including strokes, fonts, glow radii, arrow widths, oval rings.
-- `draw()` builds `fv = flatVerts(hexR)` (vertex positions) and `lv = flatVerts(labelR)` (label positions) once, then passes both to `drawIdentity(id, fv, lv, hi)`.
+- `ctx` is `let` (not `const`) so PNG export can temporarily swap it to an off-screen 5400×5400 context and call `draw()` unchanged. `targetCtx.scale(S/600)` makes everything scale proportionally — strokes, fonts, glow radii, arrow widths, oval rings.
+- `draw()` builds `fv = flatVerts(hexR)` (hex vertex positions) and `lv = flatVerts(labelR)` (label positions) once, then passes both to `drawIdentity(id, fv, lv, hi)`.
 - `isPyth = currentId === 'pyth-add' || currentId === 'pyth-sub'`. When true:
   - Labels render via `drawSquaredLabel(text, x, y, fs, color)` instead of plain `ctx.fillText` — gives `sin`, `cos`, etc. a small `²` superscript.
   - `drawOne(color, size, true)` adds a `²` next to the center "1".
 - Identity dispatch: `drawIdentity(id, fv, lv, hi)` switches on `currentId` and calls one of the seven `draw*` functions.
-- **Primitives / helpers added this session** (above the overlay functions in the script):
-  - `labelPos(i)` / `radialPt(i, r)` — quick position helpers
-  - `offsetToward(from, to, dist)` — point `dist` units along the segment from→to
-  - `drawArrowhead(from, to, size, color)` — solid triangle head
-  - `drawArrow(points[], opts)` — main arrow primitive
-  - `drawHighlightOval(target, opts)` — red oval around a label or the center
-  - `drawSquaredLabel(text, x, y, fs, color)` — italic serif text with small `²` to the right
-- Helpers still in use from before: `flatVerts(r)`, `bgLabel(text,x,y,size,color)` (translucent white pill behind text), `hexToRgba()`, `lerp()`.
-- Key constants: `cx=cy=300`, `hexR=W*0.24` (144), `labelR=hexR*1.3` (187), `outerR=hexR*1.7` (245 — now mostly unused).
+
+### Primitives / helpers (above the overlay functions in the script)
+
+- `labelPos(i)` / `radialPt(i, r)` — position helpers
+- `offsetToward(from, to, dist)` — point `dist` units along the segment from→to
+- `drawArrowhead(from, to, size, color)` — solid triangle head
+- `drawArrow(points[], opts)` — main arrow primitive (straight / elbow / multi-segment)
+- `drawHighlightOval(target, opts)` — red oval around a label or center
+- `drawSquaredLabel(text, x, y, fs, color)` — italic serif text with small `²` to the right
+
+### Still-used legacy helpers
+
+- `flatVerts(r)`, `hexToRgba()`, `lerp()`
+- `bgLabel(text, x, y, size, color)` — was used for white-pill text in first-pass overlays; **no longer used by any redesigned overlay**. Candidate for removal during cleanup.
+
+### Key constants
+
+- `cx = cy = 300`, `hexR = W*0.24` (144), `labelR = hexR*1.3` (187), `outerR = hexR*1.7` (245)
+- **`outerR` is no longer used** by any overlay (was for old placeholder label rings). Candidate for removal during cleanup.
 
 ---
 
@@ -123,21 +128,24 @@ Whether the menu structure (which families exist, which are split, which are dro
 
 ## Session changelog
 
-### Session 3 — identity visual rework (first pass; flagged for redesign)
+### Session 4 — Identity overlay redesign (all 7 settled)
 
-1. Reviewed user mockups in `media/images/refs/` plus a mathsisfun cofunction screenshot.
-2. Discussion-phase decisions (subject to revision in the redesign pass):
-   - Reciprocal and Product · diagonal kept as separate menu items.
-   - Quotient and Cofunction treated as exceptions to the "one example" rule (Quotient shows 3 paths; Cofunction shows 3 pairs).
-   - Pythagorean split into additive and subtractive.
-   - Half-angle and Quadrants positive removed from the menu.
-3. Added two primitives: `drawArrow` and `drawHighlightOval`. Added `drawSquaredLabel` and a `withSquare` flag on `drawOne`.
-4. Replaced the eight old placeholder `draw*` functions with seven new ones.
-5. Wired Pythagorean squared-label mode into `draw()` (all six trig labels + center get `²`).
-6. Updated dropdown HTML; added legacy-ID migration to `applyConfig`.
-7. **User feedback at end of session:** the first-pass overlays have extensive mistakes — including wrong arrow directions — and need redesign, not just tuning. Specific defect list not yet captured.
+1. Walked through each overlay one-by-one with the user; rebuilt against the mockups in `media/images/refs/`.
+2. Reciprocal: two-arrow flow (sin→1, 1→csc), removed pasted-on red text, added trig-label-style floating equation.
+3. Product · diagonal: arrows no longer bisect labels (start just past each label), added side equation.
+4. Product · rim: added dashed Bezier associator (tan↔cos arcing outside hex) saying "these two multiplied"; bumped arrow offsets; fixed dropdown caption (`cos = sin · cot` → `sin = cos · tan`).
+5. Quotient: split center path into two arrows (tan→1, 1→cot) to match Reciprocal flow scheme; added multi-line equation block with three quotient forms; **menu reorder**: Reciprocal moved from position 1 → 5 (after Quotient) since it's the subspecies.
+6. Cofunction: dropped right-side pill cards (were clipping), replaced with multi-line equation block in upper-left, kept three pair arrows.
+7. Pythagorean · additive: rebuilt geometry to L-shape with diagonal entering the top wedge interior and terminating at top center of 1² oval; replaced pill `(+)` with clean italic `+` at wedge centroid.
+8. Pythagorean · subtractive: mirror of additive geometry, reversed direction (arrowhead lands at sin²); clean italic `−` at wedge centroid.
 
-### Session 2 — pivot from sidebar to floating panel
+### Session 3 — First pass + GitHub publication
+
+1. Built first-pass overlay code (later fully redesigned in session 4).
+2. Initialized git in the project; created README, HANDOFF, `.gitignore`; restructured root with `legacy/` for old Manim scripts; wrapped TRIGHEX_002 as a published `index.html` with full HTML5 doc.
+3. Committed and pushed to https://github.com/Fourier18/trig_hexagon. GitHub Pages enabled, live at https://fourier18.github.io/trig_hexagon/.
+
+### Session 2 — Pivot from sidebar to floating panel
 
 1. Floated all controls behind a single bottom-centered ƒ button → hexagon gets full canvas width.
 2. Replaced the ƒ text glyph with the inlined `media/hex-gear-icon.svg`.
@@ -149,18 +157,35 @@ Whether the menu structure (which families exist, which are split, which are dro
 
 ---
 
-## Roadmap
+## Roadmap — next session focus
 
-1. **Next session — primary:** identity overlay redesign. User has reported extensive mistakes in the current first-pass; specifics (beyond "wrong arrow directions") to be enumerated at the start of the next session. Walk each overlay with the user against its mockup before changing code.
-2. **After identities settle:** push to GitHub.
-3. **Future — possibly revisited:** Half-angle and Quadrants positive (currently removed from the menu) as separate widgets or back in the menu — decision deferred.
-4. **Future — far:** packaging as an app (Mac / Android / PC) — at which point the persistence model would need rethinking (per-platform native storage).
+### 1. Cleanup / inspection
+- **Prune unused code:** `bgLabel` and `outerR` are no longer referenced by any overlay — remove them and any other leftovers from the first-pass.
+- **Audit `Appearance` panel toggles** — some may be vestigial or redundant. Candidates to evaluate:
+  - `Sphere mode` toggle vs. glow radius/intensity sliders — overlap in function.
+  - `Show: Triangles` and `Show: Diagonals` — do both meaningfully change the diagram, or are they near-duplicates?
+  - `Glow` vs. `Sphere` color pickers (sphere fill / sphere edge / glow) — could potentially collapse into fewer settings.
+- **Default appearance:** `c-hi` (ID highlight) defaults to purple but the mockup-style is red. Consider changing default to red (`#cc0000`) so first-time users see the intended look.
+
+### 2. Testing
+- **Cross-browser:** verify PNG export, drag, and localStorage persistence on Firefox and Safari (currently developed on Edge/Chrome).
+- **Per-overlay PNG export:** render each overlay at 5400×5400 and confirm arrows/text scale cleanly (the canvas ctx-swap should handle this but worth verifying).
+- **Mobile/tablet:** check whether the draggable panel works on touch (uses pointer events — should be OK in modern mobile browsers).
+- **Verify legacy-ID migration** — if a user with an old saved config (e.g., `currentId: 'pyth'`) loads the new version, does it cleanly migrate to `pyth-add`?
+
+### 3. App speculations (future)
+- **Electron wrapper** is the lowest-effort path to a desktop app (Mac/Windows/Linux). Persistence would need to switch from `localStorage` to filesystem (e.g., per-platform AppData / Application Support).
+- **Mobile (Android/iOS):** Capacitor or PWA wrapping around the existing HTML. PWA route is interesting because it works with no app store and respects the existing localStorage model.
+- **Single-file constraint:** keep the widget as one HTML file as long as it's the published artifact — splitting into multiple files breaks the "open it in a browser, done" workflow.
+
+### 4. Future identities (deferred)
+- **Half-angle**, **Derivatives**, **Quadrants positive (ASTC)** — these don't live on the hex geometrically. Could be sibling widgets (separate canvases) or modal overlays that don't try to map onto the hex.
 
 ---
 
 ## Misc notes
 
-- `trig_hexagon.py` through `trig_hexagon_005.py` in project root are Manim scripts from the earlier phase. No longer the output target. Useful only as a vertex-arrangement / styling reference if needed.
-- `test.py` — unknown purpose, not touched this session.
-- `__pycache__/` — Python build artifacts, ignore.
-- The `ID highlight` color picker in Appearance drives the overlay color. Default is purple (`#534AB7`); set to red (`#cc0000`) to roughly approximate the mockup style.
+- `trig_hexagon.py` through `trig_hexagon_005.py` in `legacy/` are Manim scripts from the earlier phase. No longer the output target. Useful only as a vertex-arrangement / styling reference if needed.
+- `legacy/test.py` — unknown purpose, kept for reference.
+- `media/Tex/`, `media/texts/`, `media/videos/`, `media/images/trig_hexagon*/` are Manim build artifacts, gitignored.
+- The `ID highlight` color picker in Appearance drives the overlay color. Default is purple (`#534AB7`); set to red (`#cc0000`) to match the mockup style.

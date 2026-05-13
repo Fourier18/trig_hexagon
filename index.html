@@ -107,10 +107,10 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#fafaf
         <h4>Identity overlay</h4>
         <div class="id-list" id="id-list">
           <div class="id-item sel" data-id="none">None</div>
-          <div class="id-item" data-id="recip">Reciprocal<span class="id-eq">sin = 1 / csc</span></div>
           <div class="id-item" data-id="prod-diag">Product · diagonal<span class="id-eq">sin · csc = 1</span></div>
-          <div class="id-item" data-id="prod-rim">Product · rim<span class="id-eq">cos = sin · cot</span></div>
+          <div class="id-item" data-id="prod-rim">Product · rim<span class="id-eq">sin = cos · tan</span></div>
           <div class="id-item" data-id="quot">Quotient<span class="id-eq">tan = sin/cos = 1/cot = sec/csc</span></div>
+          <div class="id-item" data-id="recip">Reciprocal<span class="id-eq">sin = 1 / csc</span></div>
           <div class="id-item" data-id="cofn">Cofunction<span class="id-eq">sin = cos(90° − x)</span></div>
           <div class="id-item" data-id="pyth-add">Pythagorean · additive<span class="id-eq">sin² + cos² = 1²</span></div>
           <div class="id-item" data-id="pyth-sub">Pythagorean · subtractive<span class="id-eq">sin² = 1² − cos²</span></div>
@@ -289,105 +289,279 @@ function drawHighlightOval(target,opts){
 // === Overlay implementations ===
 
 function drawReciprocal(fv,lv,hi){
-  // sin = 1/csc (one example pair; circled sin)
+  // sin = 1 / csc — "circled equals (numerator) divided by (denominator)" flow:
+  //   Arrow 1: circled sin → center "1"   (numerator)
+  //   Arrow 2: center "1" → csc            (denominator)
+  // Plus a side-floating "sin = 1 / csc" label in trig-label style.
   drawHighlightOval(4,{color:hi});
-  // Diagonal arrow from csc area up to circled sin
+  const cs=parseInt(getVal('center-size'));
+  const ovalR=cs*1.15+6;
   const sinPos=lv[4],cscPos=lv[1];
-  const start=offsetToward(cscPos,sinPos,18);
-  const end=offsetToward(sinPos,cscPos,32);
-  drawArrow([start,end],{color:hi});
-  // "= 1 / csc" label placed outward from the circled sin (top-left area)
-  const dx=sinPos[0]-cx,dy=sinPos[1]-cy,L=Math.hypot(dx,dy);
-  const lblX=sinPos[0]+(dx/L)*46-2,lblY=sinPos[1]+(dy/L)*30;
-  bgLabel('= 1 / csc',lblX,lblY,14,hi);
+  // Arrow 1: sin oval edge → center oval edge
+  const sinExit=offsetToward(sinPos,[cx,cy],32);
+  const centerSinSide=offsetToward([cx,cy],sinPos,ovalR+4);
+  drawArrow([sinExit,centerSinSide],{color:hi});
+  // Arrow 2: center oval edge → csc label edge
+  const centerCscSide=offsetToward([cx,cy],cscPos,ovalR+4);
+  const cscEntry=offsetToward(cscPos,[cx,cy],28);
+  drawArrow([centerCscSide,cscEntry],{color:hi});
+  // Floating equation in trig-label style (font/color match), placed
+  // outward along the sin-vertex radial direction.
+  const lc=getVal('c-label');
+  const fs=parseInt(getVal('font-size'));
+  const sinAngle=Math.PI/3*4;
+  const eqDist=labelR*1.45;
+  const tx=cx+eqDist*Math.cos(sinAngle);
+  const ty=cy+eqDist*Math.sin(sinAngle);
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('sin = 1 / csc',tx,ty);
+  ctx.restore();
 }
 
 function drawProdDiag(fv,lv,hi){
-  // sin · csc = 1 (one example pair; circled center)
+  // sin · csc = 1 — both operands flow INTO the circled center "1":
+  //   Arrow 1: just past sin label (toward center) → center oval edge
+  //   Arrow 2: just past csc label (toward center) → center oval edge
+  // Plus a side-floating "sin · csc = 1" label in trig-label style.
   drawHighlightOval('center',{color:hi});
   const cs=parseInt(getVal('center-size'));
   const ovalR=cs*1.15+6;
-  // Two arrows: sin (4) and csc (1) along the diagonal, into center oval edge
-  const sinFar=radialPt(4,labelR*1.5);
-  const cscFar=radialPt(1,labelR*1.5);
-  const endSin=offsetToward([cx,cy],sinFar,ovalR+4);
-  const endCsc=offsetToward([cx,cy],cscFar,ovalR+4);
-  drawArrow([sinFar,endSin],{color:hi});
-  drawArrow([cscFar,endCsc],{color:hi});
+  const sinPos=lv[4],cscPos=lv[1];
+  // Arrows start just past each label (no bisecting), end at center oval edge
+  const sinExit=offsetToward(sinPos,[cx,cy],32);
+  const centerSinSide=offsetToward([cx,cy],sinPos,ovalR+4);
+  drawArrow([sinExit,centerSinSide],{color:hi});
+  const cscExit=offsetToward(cscPos,[cx,cy],32);
+  const centerCscSide=offsetToward([cx,cy],cscPos,ovalR+4);
+  drawArrow([cscExit,centerCscSide],{color:hi});
+  // Floating equation in trig-label style (matches Reciprocal placement)
+  const lc=getVal('c-label');
+  const fs=parseInt(getVal('font-size'));
+  const sinAngle=Math.PI/3*4;
+  const eqDist=labelR*1.45;
+  const tx=cx+eqDist*Math.cos(sinAngle);
+  const ty=cy+eqDist*Math.sin(sinAngle);
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('sin · csc = 1',tx,ty);
+  ctx.restore();
 }
 
 function drawProdRim(fv,lv,hi){
-  // sin = cos · tan (one example; circled sin)
+  // sin = cos · tan — dashed associator says "these two multiplied",
+  //   solid arrows say "yield this":
+  //   Dashed Bezier curve: tan ↔ cos (operands, multiplied)
+  //   Arrow 1: just past cos label → circled sin
+  //   Arrow 2: just past tan label → circled sin
+  // Plus a side-floating "sin = cos · tan" label in trig-label style.
   drawHighlightOval(4,{color:hi});
-  // Top arrow: cos (5) → sin oval
-  const a1Start=offsetToward(lv[5],lv[4],22);
-  const a1End=offsetToward(lv[4],lv[5],32);
-  drawArrow([a1Start,a1End],{color:hi});
-  // Diagonal arrow: tan (3) → sin oval
-  const a2Start=offsetToward(lv[3],lv[4],22);
-  const a2End=offsetToward(lv[4],lv[3],32);
-  drawArrow([a2Start,a2End],{color:hi});
+  const tanPos=lv[3],cosPos=lv[5],sinPos=lv[4];
+  // Dashed associator: tan ↔ cos via quadratic Bezier, arcing outside
+  // the hex on the side AWAY from center.
+  const tanEdge=offsetToward(tanPos,cosPos,28);
+  const cosEdge=offsetToward(cosPos,tanPos,28);
+  const midX=(tanEdge[0]+cosEdge[0])/2,midY=(tanEdge[1]+cosEdge[1])/2;
+  const lineDX=cosEdge[0]-tanEdge[0],lineDY=cosEdge[1]-tanEdge[1];
+  const lineL=Math.hypot(lineDX,lineDY)||1;
+  let perpX=-lineDY/lineL,perpY=lineDX/lineL;
+  if(perpX*(cx-midX)+perpY*(cy-midY)>0){perpX=-perpX;perpY=-perpY;}
+  const bow=120;
+  const ctrlX=midX+perpX*bow,ctrlY=midY+perpY*bow;
+  ctx.save();
+  ctx.strokeStyle=hexToRgba(hi,0.75);
+  ctx.lineWidth=2;
+  ctx.setLineDash([7,5]);
+  ctx.lineCap='round';
+  ctx.beginPath();
+  ctx.moveTo(tanEdge[0],tanEdge[1]);
+  ctx.quadraticCurveTo(ctrlX,ctrlY,cosEdge[0],cosEdge[1]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.restore();
+  // Solid arrows: cos → sin and tan → sin (start just past each label)
+  drawArrow([offsetToward(cosPos,sinPos,28),offsetToward(sinPos,cosPos,32)],{color:hi});
+  drawArrow([offsetToward(tanPos,sinPos,28),offsetToward(sinPos,tanPos,32)],{color:hi});
+  // Floating equation in trig-label style at the established upper-left spot
+  const lc=getVal('c-label');
+  const fs=parseInt(getVal('font-size'));
+  const sinAngle=Math.PI/3*4;
+  const eqDist=labelR*1.45;
+  const tx=cx+eqDist*Math.cos(sinAngle);
+  const ty=cy+eqDist*Math.sin(sinAngle);
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('sin = cos · tan',tx,ty);
+  ctx.restore();
 }
 
 function drawQuot(fv,lv,hi){
-  // tan = sin/cos = 1/cot = sec/csc (3 paths; circled tan)
+  // tan = sin/cos = 1/cot = sec/csc — three paths, each with two-arrow flow
+  // (circled tan = (numerator) divided by (denominator)):
+  //   Path 1 (top rim):    tan → sin (num) → cos (denom)
+  //   Path 2 (center):     tan → "1" (num) → cot (denom)
+  //   Path 3 (bottom rim): tan → sec (num) → csc (denom)
+  // Plus a multi-line floating equation in trig-label style.
   drawHighlightOval(3,{color:hi});
-  // Path 1 (top peripheral): sin → cos
-  drawArrow([offsetToward(lv[4],lv[5],28),offsetToward(lv[5],lv[4],28)],{color:hi});
-  // Connector: tan oval → sin (up-right)
-  drawArrow([offsetToward(lv[3],lv[4],34),offsetToward(lv[4],lv[3],32)],{color:hi});
-  // Path 2 (center): tan oval → cot (horizontal through "1")
-  drawArrow([offsetToward(lv[3],lv[0],34),offsetToward(lv[0],lv[3],32)],{color:hi});
-  // Path 3 (bottom peripheral): sec → csc
-  drawArrow([offsetToward(lv[2],lv[1],28),offsetToward(lv[1],lv[2],28)],{color:hi});
-  // Connector: tan oval → sec (down-right)
-  drawArrow([offsetToward(lv[3],lv[2],34),offsetToward(lv[2],lv[3],32)],{color:hi});
+  const gr=parseInt(getVal('glow-radius'));
+  const centerR=gr+4;
+  const tanPos=lv[3],cosPos=lv[5],sinPos=lv[4],secPos=lv[2],cscPos=lv[1],cotPos=lv[0];
+  // Path 1: tan → sin → cos
+  drawArrow([offsetToward(tanPos,sinPos,34),offsetToward(sinPos,tanPos,32)],{color:hi});
+  drawArrow([offsetToward(sinPos,cosPos,28),offsetToward(cosPos,sinPos,28)],{color:hi});
+  // Path 2: tan → "1" → cot
+  drawArrow([offsetToward(tanPos,[cx,cy],34),offsetToward([cx,cy],tanPos,centerR)],{color:hi});
+  drawArrow([offsetToward([cx,cy],cotPos,centerR),offsetToward(cotPos,[cx,cy],32)],{color:hi});
+  // Path 3: tan → sec → csc
+  drawArrow([offsetToward(tanPos,secPos,34),offsetToward(secPos,tanPos,32)],{color:hi});
+  drawArrow([offsetToward(secPos,cscPos,28),offsetToward(cscPos,secPos,28)],{color:hi});
+  // Multi-line floating equation in trig-label style, upper-left
+  const lc=getVal('c-label');
+  const fs=parseInt(getVal('font-size'));
+  const eqFs=Math.round(fs*0.65);
+  const lineH=eqFs*1.35;
+  ctx.save();
+  ctx.font=`italic ${eqFs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='left';
+  ctx.textBaseline='middle';
+  const baseX=30,baseY=48;
+  ctx.fillText('tan',baseX,baseY);
+  const eqX=baseX+ctx.measureText('tan ').width;
+  ctx.fillText('= sin / cos',eqX,baseY);
+  ctx.fillText('= 1 / cot',eqX,baseY+lineH);
+  ctx.fillText('= sec / csc',eqX,baseY+lineH*2);
+  ctx.restore();
 }
 
 function drawCofn(fv,lv,hi){
-  // Three cofunction pairs shown (exception to one-example rule)
-  const pairs=[[4,5,'sin','cos'],[3,0,'tan','cot'],[2,1,'sec','csc']];
+  // Three cofunction pairs shown (exception to one-example rule):
+  //   sin → cos, tan → cot, sec → csc
+  // Plus a multi-line floating equation block in trig-label style.
+  const pairs=[[4,5],[3,0],[2,1]];
   pairs.forEach(([a,b])=>{
-    const start=offsetToward(lv[a],lv[b],28);
-    const end=offsetToward(lv[b],lv[a],28);
-    drawArrow([start,end],{color:hi});
+    drawArrow([offsetToward(lv[a],lv[b],32),offsetToward(lv[b],lv[a],32)],{color:hi});
   });
-  // Equation cards offset to the right of the canvas
-  pairs.forEach(([a,b,la,lb])=>{
-    bgLabel(`${la}(x) = ${lb}(90°−x)`,W-78,lv[b][1],10.5,hi);
-  });
+  // Multi-line floating equation in trig-label style, upper-left
+  const lc=getVal('c-label');
+  const fs=parseInt(getVal('font-size'));
+  const eqFs=Math.round(fs*0.55);
+  const lineH=eqFs*1.4;
+  ctx.save();
+  ctx.font=`italic ${eqFs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='left';
+  ctx.textBaseline='middle';
+  const baseX=28,baseY=52;
+  ctx.fillText('sin(x) = cos(90° − x)',baseX,baseY);
+  ctx.fillText('tan(x) = cot(90° − x)',baseX,baseY+lineH);
+  ctx.fillText('sec(x) = csc(90° − x)',baseX,baseY+lineH*2);
+  ctx.restore();
 }
 
 function drawPythAdd(fv,lv,hi){
-  // sin² + cos² = 1² (additive form, top wedge)
-  // Elbow path: above-sin² → above-cos² (corner) → center 1²
+  // sin² + cos² = 1² — matches user's ref mockup exactly:
+  // horizontal bar between sin² and cos² labels (just below them),
+  // bend just before cos² label, then a clean diagonal DOWN through
+  // the TOP wedge interior, terminating at the TOP CENTER of the
+  // circled "1²" oval. Plus a stylized "+" in the wedge centroid
+  // (additive op) and a floating equation in trig-label style.
+  drawHighlightOval('center',{color:hi});
   const cs=parseInt(getVal('center-size'));
   const ovalR=cs*1.15+6;
   const fs=parseInt(getVal('font-size'));
-  const yBar=lv[4][1]+fs*0.55; // just below top labels
-  const ptStart=[lv[4][0]+fs*0.55,yBar];
-  const ptCorner=[lv[5][0]-fs*0.2,yBar];
-  const ptEnd=[cx+fs*0.05,cy-ovalR-6];
+  const sinPos=lv[4],cosPos=lv[5];
+  const sinV=fv[4],cosV=fv[5];
+  // Measure squared-label half-width so bar ends just outside each label
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  const halfW=ctx.measureText('cos').width/2+4;
+  ctx.restore();
+  // Horizontal bar between labels (just below them)
+  const yBar=sinPos[1]+fs*0.55;
+  const ptStart=[sinPos[0]+halfW,yBar];
+  const ptCorner=[cosPos[0]-halfW,yBar];
+  // Diagonal terminates at TOP CENTER of "1²" oval
+  const ptEnd=[cx,cy-ovalR-4];
   drawArrow([ptStart,ptCorner,ptEnd],{color:hi});
-  // "(+)" marker in top wedge
-  const wedgeY=(cy+fv[4][1])/2-2;
-  bgLabel('(+)',cx,wedgeY,15,hi);
+  // Stylized "+" in wedge centroid (trig-label style, no pill)
+  const lc=getVal('c-label');
+  const wcx=(sinV[0]+cosV[0]+cx)/3,wcy=(sinV[1]+cosV[1]+cy)/3;
+  ctx.save();
+  ctx.font=`italic ${Math.round(fs*0.95)}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('+',wcx,wcy);
+  ctx.restore();
+  // Floating equation in trig-label style at upper-left
+  const sinAngle=Math.PI/3*4;
+  const eqDist=labelR*1.45;
+  const eqX=cx+eqDist*Math.cos(sinAngle);
+  const eqY=cy+eqDist*Math.sin(sinAngle);
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('sin² + cos² = 1²',eqX,eqY);
+  ctx.restore();
 }
 
 function drawPythSub(fv,lv,hi){
-  // sin² = 1² − cos² (subtractive form; circled sin²)
+  // sin² = 1² − cos² — mirrors the additive arrow geometry, reversed:
+  //   start at TOP CENTER of "1²" oval,
+  //   diagonal up through TOP wedge interior,
+  //   bend just before cos² label,
+  //   horizontal left to the circled sin² (arrowhead lands here).
+  // Plus a stylized "−" in the wedge centroid and a floating equation.
   drawHighlightOval(4,{color:hi});
   const cs=parseInt(getVal('center-size'));
   const ovalR=cs*1.15+6;
   const fs=parseInt(getVal('font-size'));
-  // V-path: just below cos² → near center "1²" → up to sin² oval
-  const ptStart=offsetToward(lv[5],[cx,cy],fs*0.65);
-  const ptMid=[cx+fs*0.15,cy-ovalR-4];
-  const ptEnd=offsetToward(lv[4],[cx,cy],fs*0.85);
+  const sinPos=lv[4],cosPos=lv[5];
+  const sinV=fv[4],cosV=fv[5];
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  const halfW=ctx.measureText('cos').width/2+4;
+  ctx.restore();
+  // Reverse path: 1² top → corner before cos² → past sin² label edge
+  const yBar=sinPos[1]+fs*0.55;
+  const ptStart=[cx,cy-ovalR-4];
+  const ptMid=[cosPos[0]-halfW,yBar];
+  const ptEnd=[sinPos[0]+halfW,yBar];
   drawArrow([ptStart,ptMid,ptEnd],{color:hi});
-  // "(−)" marker in top wedge
-  const wedgeY=(cy+fv[4][1])/2-2;
-  bgLabel('(−)',cx,wedgeY,15,hi);
+  // Stylized "−" in wedge centroid (trig-label style, no pill)
+  const lc=getVal('c-label');
+  const wcx=(sinV[0]+cosV[0]+cx)/3,wcy=(sinV[1]+cosV[1]+cy)/3;
+  ctx.save();
+  ctx.font=`italic ${Math.round(fs*0.95)}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('−',wcx,wcy);
+  ctx.restore();
+  // Floating equation in trig-label style at upper-left
+  const sinAngle=Math.PI/3*4;
+  const eqDist=labelR*1.45;
+  const eqX=cx+eqDist*Math.cos(sinAngle);
+  const eqY=cy+eqDist*Math.sin(sinAngle);
+  ctx.save();
+  ctx.font=`italic ${fs}px serif`;
+  ctx.fillStyle=lc;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText('sin² = 1² − cos²',eqX,eqY);
+  ctx.restore();
 }
 
 // === Pythagorean squared-label helper ===

@@ -745,25 +745,59 @@ function importConfigFile(e){
   reader.readAsText(file);
 }
 
+const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+
+function showIOSPreview(url,onClose){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem;gap:0.9rem;-webkit-tap-highlight-color:transparent';
+  const instr=document.createElement('div');
+  instr.style.cssText='color:#fff;font-family:system-ui,-apple-system,sans-serif;text-align:center;font-size:14px;line-height:1.5;max-width:90vw';
+  instr.innerHTML='<strong>Long-press the image, then tap &ldquo;Save to Photos&rdquo;</strong><br><span style="opacity:.7;font-size:12px">Tap outside the image to close</span>';
+  const img=document.createElement('img');
+  img.src=url;
+  img.style.cssText='max-width:90vw;max-height:70vh;border-radius:8px;background:#fff;display:block';
+  overlay.appendChild(instr);overlay.appendChild(img);
+  overlay.addEventListener('click',(e)=>{if(e.target===img)return;document.body.removeChild(overlay);if(onClose)onClose();});
+  document.body.appendChild(overlay);
+}
+
 function exportPNG(){
   const btn=document.getElementById('png-btn');
   const orig=btn.innerHTML;
   btn.disabled=true;btn.innerHTML='Generating…';
+  // iOS Safari max canvas area ≈ 16M pixels (4096²). Cap below that on iOS
+  // so toBlob doesn't silently fail. Desktop keeps 5400² @ 300 dpi.
+  const S=isIOS?3000:5400;
+  const resetBtn=(msg,delay)=>{btn.disabled=false;if(msg){btn.innerHTML=msg;setTimeout(()=>{btn.innerHTML=orig;},delay||2500);}else{btn.innerHTML=orig;}};
   requestAnimationFrame(()=>setTimeout(()=>{
-    const S=5400,off=document.createElement('canvas');
-    off.width=S;off.height=S;
-    const offCtx=off.getContext('2d');
-    offCtx.save();offCtx.scale(S/600,S/600);
-    const oldCtx=ctx;ctx=offCtx;draw();ctx=oldCtx;
-    offCtx.restore();
-    off.toBlob(blob=>{
-      const url=URL.createObjectURL(blob);
-      const a=document.createElement('a');
-      a.href=url;a.download='trig-hexagon.png';
-      document.body.appendChild(a);a.click();document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      btn.disabled=false;btn.innerHTML=orig;
-    },'image/png');
+    let off;
+    try{
+      off=document.createElement('canvas');
+      off.width=S;off.height=S;
+      const offCtx=off.getContext('2d');
+      if(!offCtx)throw new Error('no ctx');
+      offCtx.save();offCtx.scale(S/600,S/600);
+      const oldCtx=ctx;ctx=offCtx;draw();ctx=oldCtx;
+      offCtx.restore();
+    }catch(err){resetBtn('Export failed — try smaller config',3500);return;}
+    try{
+      off.toBlob(blob=>{
+        if(!blob){resetBtn('Export blob failed (canvas too big?)',3500);return;}
+        const url=URL.createObjectURL(blob);
+        if(isIOS){
+          // iOS Safari ignores <a download> — show modal preview so user can
+          // long-press → "Save to Photos" via the native share sheet
+          showIOSPreview(url,()=>URL.revokeObjectURL(url));
+          resetBtn();
+        }else{
+          const a=document.createElement('a');
+          a.href=url;a.download='trig-hexagon.png';
+          document.body.appendChild(a);a.click();document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          resetBtn();
+        }
+      },'image/png');
+    }catch(err){resetBtn('Export failed',2500);}
   },20));
 }
 

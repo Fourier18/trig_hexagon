@@ -84,8 +84,7 @@ Roadmap (per `HANDOFF.md`):
 
 1. **Cleanup / inspection** — prune dead code (`bgLabel`, `outerR` from first-pass), audit the Appearance panel for vestigial toggles, consider changing default `ID highlight` color from purple to red to match the intended look out of the box.
 2. **Testing** — cross-browser (Firefox / Safari), per-overlay PNG export verification, mobile touch panel behavior.
-3. **Future: split-out treatments** for Half-angle, Derivatives, and Quadrants-positive identities (none of these live on the hex geometrically; would be sibling widgets).
-4. **Future: native-app packaging** (Mac / Windows / Android via Electron, Capacitor, or PWA), which would require rethinking persistence per platform.
+3. **Future: native-app packaging** (Mac / Windows / Android via Electron, Capacitor, or PWA), which would require rethinking persistence per platform.
 
 ---
 

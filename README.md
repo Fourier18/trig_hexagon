@@ -1,4 +1,4 @@
-# The Magick Hexagon
+# The Magick Trig Hexagon
 
 > An interactive **Magic Trig Hexagon** with toggleable identity overlays, fully customizable appearance, and print-quality PNG export (5400×5400 @ 300 dpi).
 

@@ -31,7 +31,7 @@ Reference page: [Magic Hexagon for Trig Identities — Math is Fun](https://www.
   - Overlays render on top of whatever hex configuration is currently set
   - Pythagorean modes also re-render all six trig labels and the center `1` with a `²` superscript
 - **Floating ƒ panel** — single bottom-centered button opens a draggable popup with two views (Identity overlay / Appearance), so the hexagon gets the full canvas width
-- **Appearance customization** — 9 colors (background, hexagon, internals, labels, center, glow, sphere fill, sphere edge, ID highlight), strokes, opacities, font sizes, glow radius/intensity, six visibility toggles
+- **Appearance customization** — 8 colors (background, hexagon, internals, labels, center, sphere fill, sphere edge, ID highlight), strokes, opacities, font sizes, sphere radius, five visibility toggles (labels, diagonals, center 1, triangles, sphere)
 - **Print-quality PNG export** — primary button generates a 5400×5400 @ 300 dpi PNG (sized for an 18″ poster), scaled losslessly from the 600×600 canvas
 - **Persistence** — settings save automatically to `localStorage` with read-back verification; manual JSON export/import (`↓` / `↑`) as a bulletproof fallback for `file://` contexts
 
@@ -82,7 +82,7 @@ The widget is functional end-to-end: render, customize, save, export. **All seve
 
 Roadmap (per `HANDOFF.md`):
 
-1. **Cleanup / inspection** — prune dead code (`bgLabel`, `outerR` from first-pass), audit the Appearance panel for vestigial toggles, consider changing default `ID highlight` color from purple to red to match the intended look out of the box.
+1. **Cleanup / inspection** — ✅ dead code pruned (`bgLabel`, `lerp`, `drawGlow`, `outerR`), sphere/glow consolidated to sphere-only. Still open: change default `ID highlight` color from purple to red to match the intended look out of the box.
 2. **Testing** — cross-browser (Firefox / Safari), per-overlay PNG export verification, mobile touch panel behavior.
 3. **Future: native-app packaging** (Mac / Windows / Android via Electron, Capacitor, or PWA), which would require rethinking persistence per platform.
 

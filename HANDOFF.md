@@ -107,13 +107,13 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ### Still-used legacy helpers
 
-- `flatVerts(r)`, `hexToRgba()`, `lerp()`
-- `bgLabel(text, x, y, size, color)` — was used for white-pill text in first-pass overlays; **no longer used by any redesigned overlay**. Candidate for removal during cleanup.
+- `flatVerts(r)`, `hexToRgba()`
+- (Cleaned up session 5: `bgLabel`, `lerp`, `drawGlow` removed as dead code.)
 
 ### Key constants
 
-- `cx = cy = 300`, `hexR = W*0.24` (144), `labelR = hexR*1.3` (187), `outerR = hexR*1.7` (245)
-- **`outerR` is no longer used** by any overlay (was for old placeholder label rings). Candidate for removal during cleanup.
+- `cx = cy = 300`, `hexR = W*0.24` (144), `labelR = hexR*1.3` (187)
+- (Cleaned up session 5: `outerR` removed.)
 
 ---
 
@@ -127,6 +127,14 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 ---
 
 ## Session changelog
+
+### Session 5 — Cleanup pass
+
+1. Removed dead code: `bgLabel`, `lerp`, `drawGlow` functions; `outerR` constant. All confirmed unreferenced after the session-4 overlay redesigns.
+2. Collapsed the dual sphere/glow rendering modes into sphere-only — `drawSphere` is the sole center decoration now.
+3. Removed Appearance UI: `Glow` color picker, `Intensity` slider, `Sphere mode` toggle. The `Glow / sphere` accordion is now `Sphere` with just the radius slider. The visibility toggle (was `Glow`) is now `Sphere`.
+4. Kept internal IDs `show-glow` and `glow-radius` so old saved configs continue to load cleanly; only UI labels changed.
+5. Removed deleted IDs from `colorIds`, `rangeIds`, `checkIds`, `rangeOuts` arrays so they're no longer collected/saved/applied.
 
 ### Session 4 — Identity overlay redesign (all 7 settled)
 
@@ -159,13 +167,11 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ## Roadmap — next session focus
 
-### 1. Cleanup / inspection
-- **Prune unused code:** `bgLabel` and `outerR` are no longer referenced by any overlay — remove them and any other leftovers from the first-pass.
-- **Audit `Appearance` panel toggles** — some may be vestigial or redundant. Candidates to evaluate:
-  - `Sphere mode` toggle vs. glow radius/intensity sliders — overlap in function.
-  - `Show: Triangles` and `Show: Diagonals` — do both meaningfully change the diagram, or are they near-duplicates?
-  - `Glow` vs. `Sphere` color pickers (sphere fill / sphere edge / glow) — could potentially collapse into fewer settings.
-- **Default appearance:** `c-hi` (ID highlight) defaults to purple but the mockup-style is red. Consider changing default to red (`#cc0000`) so first-time users see the intended look.
+### 1. Cleanup / inspection (mostly done session 5)
+- ✅ Dead code pruned: `bgLabel`, `lerp`, `drawGlow`, `outerR`.
+- ✅ Sphere/glow consolidated to sphere-only.
+- `Show: Triangles` and `Show: Diagonals` are NOT redundant — triangles control the colored cell fills, diagonals control the dividing line work. Both kept.
+- Still open: **default appearance** — `c-hi` (ID highlight) defaults to purple but mockup-style is red. Consider changing default to red (`#cc0000`) so first-time users see the intended look.
 
 ### 2. Testing
 - **Cross-browser:** verify PNG export, drag, and localStorage persistence on Firefox and Safari (currently developed on Edge/Chrome).

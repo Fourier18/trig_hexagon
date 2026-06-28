@@ -31,7 +31,7 @@ Reference page: [Magic Hexagon for Trig Identities — Math is Fun](https://www.
   - Overlays render on top of whatever hex configuration is currently set
   - Pythagorean modes also re-render all six trig labels and the center `1` with a `²` superscript
 - **Floating ƒ panel** — single bottom-centered button opens a draggable popup with two views (Identity overlay / Appearance), so the hexagon gets the full canvas width
-- **Appearance customization** — 8 colors (background, hexagon, internals, labels, center, sphere fill, sphere edge, ID highlight), strokes, opacities, font sizes, sphere radius, five visibility toggles (labels, diagonals, center 1, triangles, sphere)
+- **Appearance customization** — 9 colors (background, hex outline, hex fill, internals, labels, center, sphere fill, sphere edge, ID highlight), strokes, opacities, font sizes, sphere radius, five visibility toggles (labels, diagonals, center 1, triangles, sphere)
 - **Print-quality PNG export** — primary button generates a 5400×5400 @ 300 dpi PNG (sized for an 18″ poster), scaled losslessly from the 600×600 canvas
 - **Persistence** — settings save automatically to `localStorage` with read-back verification; manual JSON export/import (`↓` / `↑`) as a bulletproof fallback for `file://` contexts
 
@@ -56,42 +56,39 @@ python -m http.server  # then visit http://localhost:8000
 
 ```
 trig_hexagon/
-├── index.html                 # Latest widget, full HTML5 doc (v2 — floating ƒ panel)
+├── index.html                 # The widget — single-file, self-contained
 ├── oldindex_001.html          # Historical v0 layout (preserved)
 ├── README.md                  # This file
-├── HANDOFF.md                 # Session-by-session state-of-the-widget
-├── Artifact versions/
-│   ├── TRIGHEX_001.html       # Pre-refactor reference (sidebar layout, Manim-targeted)
-│   └── TRIGHEX_002.html       # Current dev file (raw artifact fragment — index.html wraps this)
+├── HANDOFF.md                 # State-of-the-widget for picking up cold
 ├── media/
 │   ├── hex-gear-icon.svg      # ƒ-button glyph
-│   └── images/refs/           # Mockups for the identity overlay redesign
+│   └── images/refs/           # Mockups for the identity overlays
 └── legacy/
+    ├── TRIGHEX_001.html       # Pre-refactor reference (sidebar layout)
     ├── test.py                # Early scratch
-    └── trig_hexagon_00*.py    # 5 historical Manim scripts (the project was Manim-targeted before
-                               # pivoting to print-quality PNG)
+    └── trig_hexagon_00*.py    # 5 historical Manim scripts (project was
+                               # Manim-targeted before the print-PNG pivot)
 ```
 
 `HANDOFF.md` is the canonical state document — read it first if you're picking up where the last session left off. It contains the layout, panel architecture, render constants, persistence model, identity overlay status, and a session changelog.
 
 ---
 
-## Current state (May 2026)
+## Status
 
-The widget is functional end-to-end: render, customize, save, export. **All seven identity overlays are settled** — each was rebuilt against user-supplied mockups in `media/images/refs/` using a unified design language (red arrows + circled "this equals" label + floating equation in trig-label style). See `HANDOFF.md` for the per-overlay treatment table.
+Functional end-to-end: render, customize, save, export. Seven identity overlays implemented against the mockups in `media/images/refs/` using a unified design language — red arrows, circled "this equals" label, floating equation in trig-label style. Per-overlay treatment table lives in `HANDOFF.md`.
 
-Roadmap (per `HANDOFF.md`):
+## Roadmap
 
-1. **Cleanup / inspection** — ✅ dead code pruned (`bgLabel`, `lerp`, `drawGlow`, `outerR`), sphere/glow consolidated to sphere-only. Still open: change default `ID highlight` color from purple to red to match the intended look out of the box.
-2. **Testing** — cross-browser (Firefox / Safari), per-overlay PNG export verification, mobile touch panel behavior.
-3. **Future: native-app packaging** (Mac / Windows / Android via Electron, Capacitor, or PWA), which would require rethinking persistence per platform.
+1. **Testing** — cross-browser (Firefox / Safari), per-overlay PNG export verification, mobile touch panel behavior.
+2. **Native-app packaging** (future) — Mac / Windows / Android via Electron, Capacitor, or PWA; persistence would need rethinking per platform.
 
 ---
 
 ## Contributors
 
-- **[Fourier18](https://github.com/Fourier18)** — project owner, design direction, math review, identity overlay mockups
-- **Claude (Anthropic)** — code architecture, identity-overlay primitives (`drawArrow` / `drawHighlightOval`), per-overlay implementations against the user's mockups, Pythagorean `²` label mode, persistence layer, this README
+- **[Fourier18](https://github.com/Fourier18)** — owner, design, mathematics
+- **Claude (Anthropic)** — code
 
 ---
 

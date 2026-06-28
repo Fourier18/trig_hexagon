@@ -1,9 +1,8 @@
 # Handoff — The Magick Hexagon
 
-**Working file (dev):** `Artifact versions/TRIGHEX_002.html`
-**Published file (root, hosted via GitHub Pages):** `index.html` — wraps TRIGHEX_002.html in a full HTML5 doc
+**Working file:** `index.html` at repo root — single source of truth, full HTML5 doc, hosted via GitHub Pages
 **Live URL:** https://fourier18.github.io/trig_hexagon/
-**Older versions preserved:** `Artifact versions/TRIGHEX_001.html`, `oldindex_001.html`
+**Historical references:** `legacy/TRIGHEX_001.html` (pre-refactor), `oldindex_001.html` (v0 layout)
 **Reference page:** https://www.mathsisfun.com/algebra/trig-magic-hexagon.html
 **Mockups (identity overlays):** `media/images/refs/`
 
@@ -128,13 +127,18 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ## Session changelog
 
+### Session 6 — Consolidation + color model fix
+
+1. Killed the dual-file pattern. `Artifact versions/TRIGHEX_002.html` deleted; `index.html` at root is now the single source of truth. `TRIGHEX_001.html` moved to `legacy/`. No more "edit both files" overhead.
+2. **Color model fix:** previously the `Hexagon` color picker controlled both stroke and fill, AND wedge triangles used hardcoded alternating reds (`#e08080`/`#c06060`) plus a buggy `* 1.5` opacity multiplier — meaning no UI setting could fully clear the "haze" on the interior. Now: hex outline (`c-hex`) and hex fill (`c-hex-fill`) are separate pickers; wedge triangles share `c-hex-fill` so a single setting controls all interior fill uniformly; the `* 1.5` is removed so the opacity slider is true 0–100%.
+3. New defaults: rose pink bg (`#ffd6dd`), black hex outline + internals + center + sphere edge, scarlet hex fill + labels + ID highlight (`#cc0000`), rose pink sphere fill matching bg.
+
 ### Session 5 — Cleanup pass
 
-1. Removed dead code: `bgLabel`, `lerp`, `drawGlow` functions; `outerR` constant. All confirmed unreferenced after the session-4 overlay redesigns.
-2. Collapsed the dual sphere/glow rendering modes into sphere-only — `drawSphere` is the sole center decoration now.
-3. Removed Appearance UI: `Glow` color picker, `Intensity` slider, `Sphere mode` toggle. The `Glow / sphere` accordion is now `Sphere` with just the radius slider. The visibility toggle (was `Glow`) is now `Sphere`.
-4. Kept internal IDs `show-glow` and `glow-radius` so old saved configs continue to load cleanly; only UI labels changed.
-5. Removed deleted IDs from `colorIds`, `rangeIds`, `checkIds`, `rangeOuts` arrays so they're no longer collected/saved/applied.
+1. Removed dead code: `bgLabel`, `lerp`, `drawGlow` functions; `outerR` constant.
+2. Collapsed sphere/glow rendering to sphere-only (`drawSphere` is the sole center decoration).
+3. Appearance UI: removed `Glow` color, `Intensity` slider, `Sphere mode` toggle. `Glow / sphere` accordion → `Sphere`; `Show: Glow` toggle → `Show: Sphere`.
+4. Internal IDs `show-glow` and `glow-radius` kept so old saved configs continue loading cleanly; only UI labels changed.
 
 ### Session 4 — Identity overlay redesign (all 7 settled)
 
@@ -167,11 +171,9 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ## Roadmap — next session focus
 
-### 1. Cleanup / inspection (mostly done session 5)
-- ✅ Dead code pruned: `bgLabel`, `lerp`, `drawGlow`, `outerR`.
-- ✅ Sphere/glow consolidated to sphere-only.
-- `Show: Triangles` and `Show: Diagonals` are NOT redundant — triangles control the colored cell fills, diagonals control the dividing line work. Both kept.
-- Still open: **default appearance** — `c-hi` (ID highlight) defaults to purple but mockup-style is red. Consider changing default to red (`#cc0000`) so first-time users see the intended look.
+### 1. Cleanup / inspection
+- `Show: Triangles` and `Show: Diagonals` are NOT redundant — triangles control the cell fills, diagonals control the dividing line work. Both kept.
+- (Other cleanup items resolved in sessions 5 and 6; see changelog.)
 
 ### 2. Testing
 - **Cross-browser:** verify PNG export, drag, and localStorage persistence on Firefox and Safari (currently developed on Edge/Chrome).

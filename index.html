@@ -124,14 +124,15 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#fafaf
           <div class="acc-head">Colors<span class="acc-arrow">▼</span></div>
           <div class="acc-body">
             <div class="color-grid">
-              <div class="color-item"><span>Background</span><input type="color" id="c-bg" value="#f5e6e6"></div>
-              <div class="color-item"><span>Hexagon</span><input type="color" id="c-hex" value="#cc0000"></div>
-              <div class="color-item"><span>Internals</span><input type="color" id="c-diag" value="#cc0000"></div>
-              <div class="color-item"><span>Labels</span><input type="color" id="c-label" value="#8b0000"></div>
+              <div class="color-item"><span>Background</span><input type="color" id="c-bg" value="#ffd6dd"></div>
+              <div class="color-item"><span>Hex outline</span><input type="color" id="c-hex" value="#000000"></div>
+              <div class="color-item"><span>Hex fill</span><input type="color" id="c-hex-fill" value="#cc0000"></div>
+              <div class="color-item"><span>Internals</span><input type="color" id="c-diag" value="#000000"></div>
+              <div class="color-item"><span>Labels</span><input type="color" id="c-label" value="#cc0000"></div>
               <div class="color-item"><span>Center "1"</span><input type="color" id="c-center" value="#000000"></div>
-              <div class="color-item"><span>Sphere fill</span><input type="color" id="c-sphere" value="#ffb3b3"></div>
+              <div class="color-item"><span>Sphere fill</span><input type="color" id="c-sphere" value="#ffd6dd"></div>
               <div class="color-item"><span>Sphere edge</span><input type="color" id="c-sphere2" value="#000000"></div>
-              <div class="color-item"><span>ID highlight</span><input type="color" id="c-hi" value="#534AB7"></div>
+              <div class="color-item"><span>ID highlight</span><input type="color" id="c-hi" value="#cc0000"></div>
             </div>
           </div>
         </div>
@@ -583,7 +584,7 @@ function drawIdentity(id,fv,lv,hi){
 }
 
 function draw(){
-  const bg=getVal('c-bg'),hc=getVal('c-hex'),dc=getVal('c-diag'),lc=getVal('c-label'),cc=getVal('c-center'),sc=getVal('c-sphere'),sc2=getVal('c-sphere2'),hi=getVal('c-hi');
+  const bg=getVal('c-bg'),hc=getVal('c-hex'),hf=getVal('c-hex-fill'),dc=getVal('c-diag'),lc=getVal('c-label'),cc=getVal('c-center'),sc=getVal('c-sphere'),sc2=getVal('c-sphere2'),hi=getVal('c-hi');
   const hs=parseFloat(getVal('hex-stroke')),ds=parseFloat(getVal('diag-stroke'));
   const ho=parseInt(getVal('hex-opacity'))/100,dop=parseInt(getVal('diag-opacity'))/100;
   const gr=parseInt(getVal('glow-radius'));
@@ -593,10 +594,11 @@ function draw(){
   const fv=flatVerts(hexR);
   const lv=flatVerts(labelR);
   const isPyth=currentId==='pyth-add'||currentId==='pyth-sub';
-  const triColors=['#e08080','#c06060','#e08080','#c06060','#e08080','#c06060'];
-  if(st){for(let i=0;i<6;i++){const v1=fv[i],v2=fv[(i+1)%6];ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(v1[0],v1[1]);ctx.lineTo(v2[0],v2[1]);ctx.closePath();ctx.fillStyle=hexToRgba(triColors[i],dop*1.5);ctx.fill();}}
+  // Wedges and hex body share the same fill color (c-hex-fill) so a single
+  // color/opacity setting controls all interior fill with no hazing overlay.
+  if(st){for(let i=0;i<6;i++){const v1=fv[i],v2=fv[(i+1)%6];ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(v1[0],v1[1]);ctx.lineTo(v2[0],v2[1]);ctx.closePath();ctx.fillStyle=hexToRgba(hf,dop);ctx.fill();}}
   if(sd){ctx.strokeStyle=dc;ctx.lineWidth=ds;[[0,3],[1,4],[2,5]].forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(fv[a][0],fv[a][1]);ctx.lineTo(fv[b][0],fv[b][1]);ctx.stroke();});for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(fv[i][0],fv[i][1]);ctx.stroke();}}
-  ctx.beginPath();ctx.moveTo(fv[0][0],fv[0][1]);for(let i=1;i<6;i++)ctx.lineTo(fv[i][0],fv[i][1]);ctx.closePath();ctx.fillStyle=hexToRgba(hc,ho);ctx.fill();ctx.strokeStyle=hc;ctx.lineWidth=hs;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(fv[0][0],fv[0][1]);for(let i=1;i<6;i++)ctx.lineTo(fv[i][0],fv[i][1]);ctx.closePath();ctx.fillStyle=hexToRgba(hf,ho);ctx.fill();ctx.strokeStyle=hc;ctx.lineWidth=hs;ctx.stroke();
   if(sg){drawSphere(sc,sc2,gr);}
   if(sc_)drawOne(cc,cs,isPyth);
   if(sl){
@@ -610,7 +612,7 @@ function draw(){
 }
 
 function bind(id,outId,suffix){const el=document.getElementById(id),out=outId?document.getElementById(outId):null;el.addEventListener('input',()=>{if(out)out.textContent=suffix?el.value+suffix:el.value;draw();});}
-['c-bg','c-hex','c-diag','c-label','c-center','c-sphere','c-sphere2','c-hi'].forEach(id=>bind(id));
+['c-bg','c-hex','c-hex-fill','c-diag','c-label','c-center','c-sphere','c-sphere2','c-hi'].forEach(id=>bind(id));
 bind('hex-stroke','hex-stroke-out');bind('diag-stroke','diag-stroke-out');
 bind('hex-opacity','hex-opacity-out','%');bind('diag-opacity','diag-opacity-out','%');
 bind('font-size','font-size-out');bind('center-size','center-size-out');
@@ -669,7 +671,7 @@ document.querySelectorAll('.id-item').forEach(item=>{
 });
 
 const STORAGE_KEY='trighex_config_v1';
-const colorIds=['c-bg','c-hex','c-diag','c-label','c-center','c-sphere','c-sphere2','c-hi'];
+const colorIds=['c-bg','c-hex','c-hex-fill','c-diag','c-label','c-center','c-sphere','c-sphere2','c-hi'];
 const rangeIds=['hex-stroke','diag-stroke','hex-opacity','diag-opacity','font-size','center-size','glow-radius'];
 const checkIds=['show-labels','show-diag','show-center','show-tri','show-glow'];
 const rangeOuts={'hex-stroke':['hex-stroke-out',''],'diag-stroke':['diag-stroke-out',''],'hex-opacity':['hex-opacity-out','%'],'diag-opacity':['diag-opacity-out','%'],'font-size':['font-size-out',''],'center-size':['center-size-out',''],'glow-radius':['glow-radius-out','']};

@@ -31,7 +31,7 @@ Reference page: [Magic Hexagon for Trig Identities — Math is Fun](https://www.
   - Overlays render on top of whatever hex configuration is currently set
   - Pythagorean modes also re-render all six trig labels and the center `1` with a `²` superscript
 - **Floating ƒ panel** — single bottom-centered button opens a draggable popup with two views (Identity overlay / Appearance), so the hexagon gets the full canvas width
-- **Appearance customization** — 9 colors (background, hex outline, hex fill, internals, labels, center, sphere fill, sphere edge, ID highlight), strokes, opacities, font sizes, sphere radius, five visibility toggles (labels, diagonals, center 1, triangles, sphere)
+- **Appearance customization** — 10 colors (background, hex outline, hex fill, internals, labels, center, sphere fill, sphere edge, ID highlight, ƒ button), strokes, opacities (hex fill, tri fill, internal lines), font sizes, sphere radius, five visibility toggles (labels, diagonals, center 1, triangles, sphere). Identity-overlay arrows + ovals are drawn with a contrasting halo so they stay visible against any background or fill.
 - **Print-quality PNG export** — primary button generates a 5400×5400 @ 300 dpi PNG (sized for an 18″ poster), scaled losslessly from the 600×600 canvas
 - **Persistence** — settings save automatically to `localStorage` with read-back verification; manual JSON export/import (`↓` / `↑`) as a bulletproof fallback for `file://` contexts
 

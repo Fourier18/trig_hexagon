@@ -127,6 +127,14 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ## Session changelog
 
+### Session 7 — Appearance polish
+
+1. **Drag handle truly sticky.** Previously `top: -10px` placed the handle 10px above the panel viewport when stuck, so it scrolled away. Now `top: 0`, panel restructured with `padding: 0 10px 10px` so the handle owns the top of the scroll area. Handle bar made more prominent (64×6 with 6px radius, opacity hover effect) and tinted via `--fbtn-color`.
+2. **New `c-fbtn` color picker** in the Appearance Colors accordion. Drives a CSS custom property `--fbtn-color` that themes the ƒ button (icon inactive / bg active) and the drag-handle bar. Wired via `applyFbtnColor()` called on init and on picker `input`.
+3. **New `int-opacity` slider** (Opacity accordion → "Internal", default 100%). Controls the alpha of the internal divider lines independently of hex fill and triangle fill, so dropping hex opacity no longer fades the dividers.
+4. **Halo around overlay arrows and highlight ovals.** Added `contrastColor(hex)` helper (returns `#000` for light arrows, `#fff` for dark, based on relative luminance). `drawArrow` and `drawHighlightOval` now make a halo pass at `lw + 2.5` before the main stroke, guaranteeing overlays stay visible against any background, fill, or label color the user picks.
+5. **New defaults:** background and sphere fill are now just-off-white pink (`#fff5f5`); center "1" matches label color (`#cc0000`); center-size reduced from 18 → 14 so the "1" doesn't crowd the sphere edge.
+
 ### Session 6 — Consolidation + color model fix
 
 1. Killed the dual-file pattern. `Artifact versions/TRIGHEX_002.html` deleted; `index.html` at root is now the single source of truth. `TRIGHEX_001.html` moved to `legacy/`. No more "edit both files" overhead.

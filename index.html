@@ -762,7 +762,12 @@ function onSave(){
     btn.classList.add('saved');btn.innerHTML='Saved ✓';
     setTimeout(()=>{btn.classList.remove('saved');btn.innerHTML=orig;},1500);
   }else{
-    btn.classList.add('errored');btn.innerHTML='Save blocked ('+r.err+') — use ↓ instead';
+    // localStorage can be blocked entirely (sandboxed iframes, private
+    // browsing, some file:// contexts) — don't just tell the user to
+    // click ↓ themselves, trigger the JSON download automatically so
+    // nothing is lost.
+    try{exportConfigFile();}catch(e){}
+    btn.classList.add('errored');btn.innerHTML='Save blocked ('+r.err+') — downloaded config instead';
     setTimeout(()=>{btn.classList.remove('errored');btn.innerHTML=orig;},3500);
   }
 }

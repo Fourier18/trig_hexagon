@@ -33,13 +33,13 @@ body{font-family:system-ui,-apple-system,'Segoe UI',sans-serif;background:#fafaf
   .hex-canvas{display:block;width:100%;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary)}
   .fbtn{position:absolute;bottom:8%;left:50%;transform:translate(-50%,50%);width:38px;height:38px;border-radius:50%;border:0.5px solid var(--color-border-secondary);background:rgba(255,255,255,0.92);backdrop-filter:blur(4px);color:var(--fbtn-color,var(--color-text-primary));cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,color .15s,box-shadow .15s;z-index:5;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:0}
   .fbtn:hover{background:rgba(255,255,255,1);box-shadow:0 3px 12px rgba(0,0,0,0.14)}
-  .fbtn.active{background:var(--fbtn-color,#534AB7);color:white;border-color:var(--fbtn-color,#534AB7)}
+  .fbtn.active{background:var(--fbtn-color,#cc0000);color:white;border-color:var(--fbtn-color,#cc0000)}
   .fbtn svg{width:22px;height:26px;display:block}
   .fpanel{position:absolute;bottom:calc(8% + 30px);left:50%;transform:translateX(-50%);width:260px;max-height:62%;overflow-y:auto;background:rgba(255,255,255,0.97);backdrop-filter:blur(6px);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:0 10px 10px;box-shadow:0 6px 22px rgba(0,0,0,0.14),0 2px 6px rgba(0,0,0,0.06);display:none;z-index:10}
   .fpanel.open{display:block}
   .fpanel.dragging{box-shadow:0 12px 32px rgba(0,0,0,0.22),0 3px 8px rgba(0,0,0,0.1);transition:none;cursor:grabbing}
   .drag-handle{position:sticky;top:0;height:14px;margin:0 -10px 8px;padding:8px 10px;display:flex;align-items:center;justify-content:center;cursor:grab;user-select:none;touch-action:none;background:rgba(255,255,255,0.97);backdrop-filter:blur(6px);z-index:5;border-bottom:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg) var(--border-radius-lg) 0 0}
-  .drag-handle::before{content:'';width:64px;height:6px;background:var(--fbtn-color,#534AB7);border-radius:3px;transition:width .15s,opacity .15s}
+  .drag-handle::before{content:'';width:64px;height:6px;background:var(--fbtn-color,#cc0000);border-radius:3px;transition:width .15s,opacity .15s}
   .drag-handle:hover::before{opacity:0.85;width:80px}
   .drag-handle:active{cursor:grabbing}
   .panel-view{display:none}
@@ -208,7 +208,6 @@ function drawOne(color,size,withSquare){const h=size*2.2,w=size*0.18,top=cy-h/2,
 
 // === Identity overlay primitives ===
 function labelPos(i){const a=Math.PI/3*i;return [cx+labelR*Math.cos(a),cy+labelR*Math.sin(a)];}
-function radialPt(i,r){const a=Math.PI/3*i;return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
 function offsetToward(from,to,dist){const dx=to[0]-from[0],dy=to[1]-from[1],L=Math.hypot(dx,dy)||1;return [from[0]+(dx/L)*dist,from[1]+(dy/L)*dist];}
 
 function drawArrowhead(from,to,size,color){
@@ -386,10 +385,19 @@ function drawProdRim(fv,lv,hi){
   const bow=120;
   const ctrlX=midX+perpX*bow,ctrlY=midY+perpY*bow;
   ctx.save();
+  ctx.lineCap='round';
+  ctx.setLineDash([7,5]);
+  // Halo pass so the dashed associator stays visible against any fill/bg
+  // color, matching the technique used by drawArrow/drawHighlightOval.
+  ctx.strokeStyle=contrastColor(hi);
+  ctx.lineWidth=4.5;
+  ctx.beginPath();
+  ctx.moveTo(tanEdge[0],tanEdge[1]);
+  ctx.quadraticCurveTo(ctrlX,ctrlY,cosEdge[0],cosEdge[1]);
+  ctx.stroke();
+  // Main pass
   ctx.strokeStyle=hexToRgba(hi,0.75);
   ctx.lineWidth=2;
-  ctx.setLineDash([7,5]);
-  ctx.lineCap='round';
   ctx.beginPath();
   ctx.moveTo(tanEdge[0],tanEdge[1]);
   ctx.quadraticCurveTo(ctrlX,ctrlY,cosEdge[0],cosEdge[1]);
@@ -784,7 +792,10 @@ function importConfigFile(e){
   reader.readAsText(file);
 }
 
-const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+// iPadOS Safari reports a desktop-Mac UA by default (no "iPad" token), so
+// detect it via the touch-capability trick: MacIntel platform + multitouch
+// support is desktop Safari on an actual iPad, not a real Mac.
+const isIOS=(/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1))&&!window.MSStream;
 
 function showIOSPreview(url,onClose){
   const overlay=document.createElement('div');
@@ -816,25 +827,31 @@ function exportPNG(){
       const offCtx=off.getContext('2d');
       if(!offCtx)throw new Error('no ctx');
       offCtx.save();offCtx.scale(S/600,S/600);
-      const oldCtx=ctx;ctx=offCtx;draw();ctx=oldCtx;
+      const oldCtx=ctx;
+      try{ctx=offCtx;draw();}
+      finally{ctx=oldCtx;} // always restore live ctx, even if draw() throws
       offCtx.restore();
     }catch(err){resetBtn('Export failed — try smaller config',3500);return;}
     try{
       off.toBlob(blob=>{
-        if(!blob){resetBtn('Export blob failed (canvas too big?)',3500);return;}
-        const url=URL.createObjectURL(blob);
-        if(isIOS){
-          // iOS Safari ignores <a download> — show modal preview so user can
-          // long-press → "Save to Photos" via the native share sheet
-          showIOSPreview(url,()=>URL.revokeObjectURL(url));
-          resetBtn();
-        }else{
-          const a=document.createElement('a');
-          a.href=url;a.download='trig-hexagon.png';
-          document.body.appendChild(a);a.click();document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-          resetBtn();
-        }
+        // toBlob's callback runs async — wrap it too, or a thrown error here
+        // leaves the button stuck on "Generating…" forever.
+        try{
+          if(!blob){resetBtn('Export blob failed (canvas too big?)',3500);return;}
+          const url=URL.createObjectURL(blob);
+          if(isIOS){
+            // iOS Safari ignores <a download> — show modal preview so user can
+            // long-press → "Save to Photos" via the native share sheet
+            showIOSPreview(url,()=>URL.revokeObjectURL(url));
+            resetBtn();
+          }else{
+            const a=document.createElement('a');
+            a.href=url;a.download='trig-hexagon.png';
+            document.body.appendChild(a);a.click();document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            resetBtn();
+          }
+        }catch(err){resetBtn('Export failed',2500);}
       },'image/png');
     }catch(err){resetBtn('Export failed',2500);}
   },20));

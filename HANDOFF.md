@@ -41,7 +41,7 @@ Self-contained HTML widget that renders the trig magic hexagon to a 600×600 can
 Below a divider: **Appearance** entry that swaps the panel to View 2.
 
 **View 2 · Appearance** (settings).
-Accordion: Colors / Stroke / Opacity / Typography / Glow-or-sphere / Show toggles. Back link `← Identities` at top returns to View 1. The `ID highlight` color picker drives the overlay arrow/oval color (set to red `#cc0000` to match the mockup style; default is purple `#534AB7`).
+Accordion: Colors / Stroke / Opacity / Typography / Sphere / Show. Back link `← Identities` at top returns to View 1. The `ID highlight` color picker drives the overlay arrow/oval color — default is red `#cc0000`, matching the mockup style.
 
 ---
 
@@ -204,4 +204,4 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 - `trig_hexagon.py` through `trig_hexagon_005.py` in `legacy/` are Manim scripts from the earlier phase. No longer the output target. Useful only as a vertex-arrangement / styling reference if needed.
 - `legacy/test.py` — unknown purpose, kept for reference.
 - `media/Tex/`, `media/texts/`, `media/videos/`, `media/images/trig_hexagon*/` are Manim build artifacts, gitignored.
-- The `ID highlight` color picker in Appearance drives the overlay color. Default is purple (`#534AB7`); set to red (`#cc0000`) to match the mockup style.
+- The `ID highlight` color picker in Appearance drives the overlay color. Default is red (`#cc0000`), matching the mockup style.

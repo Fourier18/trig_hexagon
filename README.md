@@ -32,7 +32,7 @@ Reference page: [Magic Hexagon for Trig Identities — Math is Fun](https://www.
   - Pythagorean modes also re-render all six trig labels and the center `1` with a `²` superscript
 - **Floating ƒ panel** — single bottom-centered button opens a draggable popup with two views (Identity overlay / Appearance), so the hexagon gets the full canvas width
 - **Appearance customization** — 10 colors (background, hex outline, hex fill, internals, labels, center, sphere fill, sphere edge, ID highlight, ƒ button), strokes, opacities (hex fill, tri fill, internal lines), font sizes, sphere radius, five visibility toggles (labels, diagonals, center 1, triangles, sphere). Identity-overlay arrows + ovals are drawn with a contrasting halo so they stay visible against any background or fill.
-- **Print-quality PNG export** — primary button generates a 5400×5400 @ 300 dpi PNG (sized for an 18″ poster), scaled losslessly from the 600×600 canvas
+- **Print-quality PNG export** — primary button generates a 5400×5400 @ 300 dpi PNG (sized for an 18″ poster), scaled losslessly from the 600×600 canvas. Capped to 3000×3000 on iOS Safari/Edge, which shows a modal preview for saving via the share sheet instead of a direct download.
 - **Persistence** — settings save automatically to `localStorage` with read-back verification; manual JSON export/import (`↓` / `↑`) as a bulletproof fallback for `file://` contexts
 
 ---
@@ -65,6 +65,7 @@ trig_hexagon/
 │   └── images/refs/           # Mockups for the identity overlays
 └── legacy/
     ├── TRIGHEX_001.html       # Pre-refactor reference (sidebar layout)
+    ├── trig_hexagon_005_html_001.html  # Interim html snapshot
     ├── test.py                # Early scratch
     └── trig_hexagon_00*.py    # 5 historical Manim scripts (project was
                                # Manim-targeted before the print-PNG pivot)

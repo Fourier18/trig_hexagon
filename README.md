@@ -62,7 +62,10 @@ trig_hexagon/
 ├── HANDOFF.md                 # State-of-the-widget for picking up cold
 ├── media/
 │   ├── hex-gear-icon.svg      # ƒ-button glyph
-│   └── images/refs/           # Mockups for the identity overlays
+│   └── images/
+│       ├── refs/               # Mockups for the identity overlays
+│       ├── trig-hexagon.png    # Preview/social image
+│       └── blank hex - *.png   # Blank hex reference renders
 └── legacy/
     ├── TRIGHEX_001.html       # Pre-refactor reference (sidebar layout)
     ├── trig_hexagon_005_html_001.html  # Interim html snapshot

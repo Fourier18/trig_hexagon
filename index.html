@@ -629,9 +629,13 @@ function draw(){
   const isPyth=currentId==='pyth-add'||currentId==='pyth-sub';
   // Wedges and hex body share the same fill color (c-hex-fill) so a single
   // color/opacity setting controls all interior fill with no hazing overlay.
+  // Fill layers (body, then wedges) are drawn FIRST, then divider lines,
+  // then the outline stroke — so the internals stay visible on top of the
+  // fill no matter how opaque hex/tri fill is set.
+  ctx.beginPath();ctx.moveTo(fv[0][0],fv[0][1]);for(let i=1;i<6;i++)ctx.lineTo(fv[i][0],fv[i][1]);ctx.closePath();ctx.fillStyle=hexToRgba(hf,ho);ctx.fill();
   if(st){for(let i=0;i<6;i++){const v1=fv[i],v2=fv[(i+1)%6];ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(v1[0],v1[1]);ctx.lineTo(v2[0],v2[1]);ctx.closePath();ctx.fillStyle=hexToRgba(hf,dop);ctx.fill();}}
   if(sd){ctx.strokeStyle=hexToRgba(dc,io);ctx.lineWidth=ds;[[0,3],[1,4],[2,5]].forEach(([a,b])=>{ctx.beginPath();ctx.moveTo(fv[a][0],fv[a][1]);ctx.lineTo(fv[b][0],fv[b][1]);ctx.stroke();});for(let i=0;i<6;i++){ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(fv[i][0],fv[i][1]);ctx.stroke();}}
-  ctx.beginPath();ctx.moveTo(fv[0][0],fv[0][1]);for(let i=1;i<6;i++)ctx.lineTo(fv[i][0],fv[i][1]);ctx.closePath();ctx.fillStyle=hexToRgba(hf,ho);ctx.fill();ctx.strokeStyle=hc;ctx.lineWidth=hs;ctx.stroke();
+  ctx.beginPath();ctx.moveTo(fv[0][0],fv[0][1]);for(let i=1;i<6;i++)ctx.lineTo(fv[i][0],fv[i][1]);ctx.closePath();ctx.strokeStyle=hc;ctx.lineWidth=hs;ctx.stroke();
   if(sg){drawSphere(sc,sc2,gr);}
   if(sc_)drawOne(cc,cs,isPyth);
   if(sl){

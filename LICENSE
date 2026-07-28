@@ -1,0 +1,35 @@
+The Magick Trig Hexagon
+Copyright (c) 2026 Fourier18
+
+This work — the widget (index.html), its generated poster/diagram output,
+and the identity-overlay mockups in media/ — is licensed under the
+Creative Commons Attribution-NonCommercial 4.0 International License
+(CC BY-NC 4.0).
+
+You are free to:
+  - Share — copy and redistribute this work in any medium or format
+  - Adapt — remix, transform, and build upon this work
+
+Under the following terms:
+  - Attribution — you must give appropriate credit to Fourier18, link to
+    https://github.com/Fourier18/trig_hexagon, and indicate if changes
+    were made.
+  - NonCommercial — you may not use this work for commercial purposes.
+
+This is a human-readable summary of (and not a substitute for) the full
+license. Full legal text:
+https://creativecommons.org/licenses/by-nc/4.0/legalcode
+
+Human-readable deed:
+https://creativecommons.org/licenses/by-nc/4.0/
+
+Classroom use, printing the exported poster for students, sharing the
+live widget link, and forking the code for your own non-commercial
+educational project are all explicitly permitted under these terms —
+that's the point of this license choice.
+
+Note: Creative Commons licenses are designed for creative/educational
+works and don't include software-specific provisions (patent grants,
+source-distribution terms) that a license like MIT would. That's a
+deliberate tradeoff here — this project is meant to be used and shared
+as an educational resource, not consumed as a software dependency.

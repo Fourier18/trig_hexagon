@@ -3,6 +3,7 @@
 > An interactive **Magic Trig Hexagon** with toggleable identity overlays, fully customizable appearance, and print-quality PNG export (5400×5400 @ 300 dpi).
 
 [![Open the widget](https://img.shields.io/badge/Open-Live%20widget-534AB7)](https://fourier18.github.io/trig_hexagon/)
+[![License: CC BY-NC 4.0](https://img.shields.io/badge/License-CC%20BY--NC%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 ---
 
@@ -98,4 +99,4 @@ Functional end-to-end: render, customize, save, export. Seven identity overlays 
 
 ## License
 
-Not yet specified. Treat as **all rights reserved** until a license is added.
+**CC BY-NC 4.0** — free to use, share, remix, and print (including for classroom handouts and posters) with attribution, non-commercial. See [LICENSE](LICENSE) for details.

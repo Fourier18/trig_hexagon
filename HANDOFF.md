@@ -1,4 +1,4 @@
-# Handoff — The Magick Hexagon
+# Handoff — The Magick Trig Hexagon
 
 **Working file:** `index.html` at repo root — single source of truth, full HTML5 doc, hosted via GitHub Pages
 **Live URL:** https://fourier18.github.io/trig_hexagon/
@@ -16,7 +16,7 @@ Self-contained HTML widget that renders the trig magic hexagon to a 600×600 can
 
 ## Current layout (top to bottom)
 
-- **Title block** — "The Magick Hexagon" (serif italic, dark red `#8b0000`) + ⬡ ornament between thin rules + "trig identities at a glance" small-caps subtitle. Centered.
+- **Title block** — "The Magick Trig Hexagon" (serif italic, dark red `#8b0000`) + ⬡ ornament between thin rules + "Identities at a Glance" small-caps subtitle. Centered.
 - **Hexagon canvas** — flat-top orientation. Vertex indices (`i * 60°` clockwise in canvas coords):
   - `0 = cot` (R), `1 = csc` (BR), `2 = sec` (BL), `3 = tan` (L), `4 = sin` (TL), `5 = cos` (TR), center = "1"
   - Co-functions occupy the right column; non-co-functions the left. Cofunction pairs mirror across the vertical axis.
@@ -127,6 +127,25 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ## Session changelog
 
+### Session 9 — Rename, license, marketing plan
+
+1. Renamed the project everywhere: "The Magick Hexagon" → "The Magick Trig Hexagon" (adds "Trig" for SEO). Subtitle changed from "trig identities at a glance" to "Identities at a Glance" (drops the now-redundant "trig"). Updated `index.html` (`<title>`, `<h1>`, subtitle, meta description) and this file's living-state sections. Session 2's changelog entry below intentionally still reads the old name — that's an accurate historical record, not a bug.
+2. Added Open Graph + Twitter Card meta tags to `index.html` (`og:title`, `og:description`, `og:image`, `twitter:card`, etc.) pointing at `media/images/trig-hexagon.png` so links shared on social platforms get a real preview card instead of a blank one. That image is from an old blue/purple palette — swap in a fresh screenshot in the current red/pink branding before real launch.
+3. **Added a license.** Was "all rights reserved" with no formal terms — incompatible with "free distribution to students and teachers." Added `LICENSE` (CC BY-NC 4.0: free to use/share/print/remix with attribution, non-commercial) and a matching README badge + License section.
+4. Wrote `MARKETING.md` — the campaign plan for free distribution to students/teachers plus a social media presence across Twitter/X, Pinterest, Reddit, Instagram, TikTok, Facebook, and BlueSky. See that file for channel strategy, asset checklist, and rollout steps. **Deliberately gitignored, local-only** — no practical reason for a growth/strategy doc to be world-readable in a public code repo. It still exists in the project folder; it just won't show up if you clone from GitHub.
+
+### Session 8 — Bug-fix / QA pass (subagent-driven)
+
+1. Ran two review subagents in parallel: one code-correctness audit of `index.html`, one docs-accuracy audit of README/HANDOFF against the actual code. Findings below were confirmed real, not false positives, before fixing.
+2. **Critical fixes:** `exportPNG()`'s offscreen-canvas `ctx` swap only restored `ctx` on the happy path — if `draw()` threw mid-export, `ctx` stayed pointed at the detached canvas for the rest of the session, silently breaking all future renders. Wrapped in `try/finally`. Also wrapped the async `toBlob` callback in its own `try/catch` — an unhandled throw there left the Download button stuck on "Generating…" forever.
+3. **iPadOS detection gap:** UA sniffing (`/iPad|iPhone|iPod/`) misses modern iPadOS Safari, which reports a desktop-Mac UA by default. Added the standard `navigator.platform==='MacIntel' && navigator.maxTouchPoints>1` fallback so iPads correctly get the 3000×3000 export cap instead of hitting the same canvas-limit bug iPhone was patched for.
+4. **Halo gap:** `drawProdRim`'s dashed "associator" curve was the one overlay element drawing raw `ctx.stroke()` instead of going through `drawArrow`/`drawHighlightOval` — the one path that could become invisible if the highlight color matched the fill/background. Gave it the same halo-pass treatment.
+5. Removed dead code (`radialPt`, never called) and fixed two CSS custom-property fallbacks that still referenced the old purple default.
+6. **Doc fixes:** HANDOFF had two self-contradicting mentions of the ID-highlight default (said purple, actually red, HANDOFF's own changelog already said red). Fixed. Also fixed a stale "Glow-or-sphere" accordion name (renamed to "Sphere" back in Session 5) and added the iOS export cap + a missing legacy file to README.
+7. **Opacity defaults were still washed out.** `hex-opacity` (30%) and `diag-opacity` (15%) were leftover from the old translucent-wash design, never bumped when the color model moved to solid scarlet fill — raised both to 100%.
+8. **Real draw-order bug**, caught by the user after the opacity fix: the hex body's full-area fill was drawn *after* the internal divider lines, so at 100% fill opacity it painted directly over them and hid them completely, regardless of `int-opacity`. Reordered the pipeline — fills first (body, then wedges), divider lines on top of the fill, outline stroke last for a crisp border.
+9. `onSave()` now auto-downloads the config JSON when `localStorage` is blocked (sandboxed iframes, private browsing) instead of just telling the user to click ↓ themselves.
+
 ### Session 7 — Appearance polish
 
 1. **Drag handle truly sticky.** Previously `top: -10px` placed the handle 10px above the panel viewport when stuck, so it scrolled away. Now `top: 0`, panel restructured with `padding: 0 10px 10px` so the handle owns the top of the scroll area. Handle bar made more prominent (64×6 with 6px radius, opacity hover effect) and tinted via `--fbtn-color`.
@@ -196,6 +215,10 @@ All seven overlays now match the user-supplied mockups in `media/images/refs/` (
 
 ### 4. Future identities (deferred)
 - **Half-angle**, **Derivatives**, **Quadrants positive (ASTC)** — these don't live on the hex geometrically. Could be sibling widgets (separate canvases) or modal overlays that don't try to map onto the hex.
+
+### 5. Marketing rollout (active — see MARKETING.md)
+- License and social meta tags are in place; the plan is written. What's NOT done and requires the user directly (Claude can't create accounts): actually creating the social media accounts on each chosen platform, and swapping the OG/Twitter-card preview image for a fresh screenshot in the current red/pink branding (current one is the old blue/purple palette).
+- Full channel strategy, asset checklist, and rollout steps live in `MARKETING.md`, not duplicated here.
 
 ---
 

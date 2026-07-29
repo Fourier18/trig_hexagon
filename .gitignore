@@ -4,8 +4,9 @@ __pycache__/
 *.pyo
 *.pyd
 
-# Claude Code session state
-.claude/
+# Claude Code session state (settings, worktrees) — but track project skills
+.claude/*
+!.claude/skills/
 
 # OS cruft
 .DS_Store
@@ -37,3 +38,10 @@ Artifact versions/TRIGHEX_001.txt
 
 # Internal planning docs — local-only, no practical reason to be public
 MARKETING.md
+
+# Draft marketing image variations — not code, not committed
+pinterest-variations/
+
+# Node dependencies (installed for the headless image-export skill)
+node_modules/
+package-lock.json

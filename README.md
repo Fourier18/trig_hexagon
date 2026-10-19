@@ -1,6 +1,6 @@
 # The Magick Trig Hexagon
 
-The six trig functions and all their identities — reciprocal, product, quotient, cofunction, Pythagorean — encoded in the geometry of a single hexagon. Toggle identity families, customize the appearance, export a print-quality poster.
+The six trig functions — and key identity families including reciprocal, product, quotient, cofunction, and Pythagorean — encoded in the geometry of a single hexagon. Toggle identity overlays, customize the appearance, export a print-quality poster.
 
 ### [Try the interactive hexagon →](https://fourier18.github.io/trig_hexagon/)
 
